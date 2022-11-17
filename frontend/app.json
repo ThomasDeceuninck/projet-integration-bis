@@ -32,7 +32,8 @@
         "android.permission.BLUETOOTH_CONNECT",
         "android.permission.BLUETOOTH_SCAN",
         "android.permission.BLUETOOTH_ADVERTISE"
-      ]
+      ],
+      "package": "com.cuchulain2612.frontend"
     },
     "web": {
       "favicon": "./assets/favicon.png"
