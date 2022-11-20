@@ -11,7 +11,7 @@ class BoutonConnectDevice extends Component{
         super(props);
         // state
         this.state={
-            connection : false, // Si le device est connecté
+            connection : false, // Si le device est connecté -> sera utilisé ? Vérifier les cas problématiques où il y aura des déconnexions ...
             connectionOptions : { // paramètres de connexion bluetooth
                 CONNECTOR_TYPE: "rfcomm", // protocole bluetooth
                 DELIMITER: "\n", // délimitation entre les messages -> vérifier
@@ -38,16 +38,22 @@ class BoutonConnectDevice extends Component{
                 throw new Error(`HC-05 Non trouvé. On ne peut pas vérifier qu'il est connecté`);
             }
 
-            let connection = this.props.device.isConnected(); // Apparement : isConnected() not a function
+            let connection = await this.props.device.isConnected();  // erreur quand on a pas défini le device
             console.log(`est connecté ? : ${connection}`);
             console.log(connection);
 
-            connection = false; // mis temporairement pour tester .connect()
 
             if(!connection){
-                console.log("Essaie de connexion");
-                connection = await this.props.device.connect(this.state.connectionOptions);
-                console.log("fin de connexion")
+                try{
+                    console.log("Essaie de connexion");
+                    connection = await this.props.device.connect(this.state.connectionOptions);
+                    console.log("Connecté")
+                }
+                catch{
+                    console.log("Une erreur c'est produite lors de la connexion");
+                    alert("Une erreur c'est produite lors de la connexion");
+                }
+                
             }
 
         }
