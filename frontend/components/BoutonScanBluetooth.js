@@ -10,6 +10,12 @@ class BoutonScanBluetooth extends Component{
     constructor(props){
         super(props);
 
+        this.state={
+          locationPermissionAcquired : false, // Permission besoin (sur Android) pour faire un scan des devices bluetooth
+          scanningForBluetooth : false, // Indique si le téléphone est en train de scanner les devices bluetooth autour de lui
+
+        }
+
         this.scanBluetooth = this.scanBluetooth.bind(this);
     }
 
@@ -26,6 +32,7 @@ class BoutonScanBluetooth extends Component{
             buttonPositive: 'OK'
           }
         );
+        this.setState({locationPermissionAcquired : granted}); // on change l'état de la permission
         return granted === PermissionsAndroid.RESULTS.GRANTED;
     };
 
@@ -40,19 +47,26 @@ class BoutonScanBluetooth extends Component{
 
             let granted = await this.requestAccessFineLocationPermission();
 
-            //alert(`Autorisation : ${granted}`);
-
+            // indique une erreur si on a pas la permission nécessaire
+            if (!granted) {
+              throw new Error(`Vous n'avez pas Autorisé la permission de localisation.`);
+              }
+            
+            this.setState({scanningForBluetooth : true});
+            console.log("[Phone] scanning for bluetooth"); 
             let devices = await RNBluetoothClassic.startDiscovery();
+            this.setState({scanningForBluetooth : false});
+            console.log("[Phone] stopped scanning for bluetooth");
 
-            //alert(`J'ai trouvé ${devices.length} appareils non apparaillés`);
 
-            //devices.forEach((item, index)=>{alert(item)});
-            console.log(Object.keys(devices[0]));
+            
+            console.log(Object.keys(devices[0])); //pour afficher toutes les clés qu'il y a dans un objet "Device"
 
+            // Pour afficher sur l'app tous les appareils bluetooth à proximité (temporaire)
             let allNames = await devices.map(x => x.name);
             let allNamesText = await allNames.join("\n");
-
             alert(allNamesText);
+
             /*
             await console.log(devices);
             await console.log(devices.length);
@@ -60,18 +74,21 @@ class BoutonScanBluetooth extends Component{
             */
 
             let hc05Device = await devices.find(this.isHC05);
-
-            await console.log(hc05Device);
-            /*
-            await console.log(hc05Device.name);
-            */
+            console.log(hc05Device);
             
+            if (hc05Device){
+              await this.props.changeUpperState(hc05Device);
+            }
+            else{
+              console.log("HC-05 n'est pas disponible à proximité");
+              alert("HC-05 n'est pas disponible à proximité");
+            }
 
-            await this.props.changeUpperState(hc05Device);
+
 
         } catch (err) {
           console.log(err);
-            alert(err);
+          alert(err); // interessant d'afficher toutes les erreurs sur l'appli ?
         }
     }
 
