@@ -30,7 +30,8 @@ class BlocBoutons extends Component{
     
           console.log(`App::componentDidMount Status: ${enabled}`);
           this.setState({ bluetoothEnabled: enabled });
-        } catch (error) {
+        } 
+        catch (error) {
           console.log('App::componentDidMount Status Error: ', error);
           this.setState({ bluetoothEnabled: false });
         }

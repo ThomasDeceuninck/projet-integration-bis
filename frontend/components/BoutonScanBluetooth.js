@@ -23,13 +23,12 @@ class BoutonScanBluetooth extends Component{
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'Access fine location required for discovery',
+            title: 'Autorisez la localisation précise',
             message:
-              'In order to perform discovery, you must enable/allow ' +
-              'fine location access.',
-            buttonNeutral: 'Ask Me Later"',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK'
+              'Pour pouvoir détecter les appareils bluetooth autour de vous vous devez autoriser la géolocalisation précise.',
+            buttonNeutral: 'Me demander plus tard',
+            buttonNegative: 'Non',
+            buttonPositive: "D'accord"
           }
         );
         this.setState({locationPermissionAcquired : granted}); // on change l'état de la permission
@@ -66,6 +65,7 @@ class BoutonScanBluetooth extends Component{
             let allNames = await devices.map(x => x.name);
             let allNamesText = await allNames.join("\n");
             alert(allNamesText);
+            console.log(allNamesText);
 
             /*
             await console.log(devices);
@@ -75,18 +75,16 @@ class BoutonScanBluetooth extends Component{
 
             let hc05Device = await devices.find(this.isHC05);
             console.log(hc05Device);
-            
-            if (hc05Device){
+
+            if(hc05Device){
               await this.props.changeUpperState(hc05Device);
             }
-            else{
+            else{ // si = Undefined ( si il ne l'a pas trouvé)
               console.log("HC-05 n'est pas disponible à proximité");
               alert("HC-05 n'est pas disponible à proximité");
             }
-
-
-
-        } catch (err) {
+        } 
+        catch (err) {
           console.log(err);
           alert(err); // interessant d'afficher toutes les erreurs sur l'appli ?
         }

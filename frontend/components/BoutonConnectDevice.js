@@ -11,7 +11,13 @@ class BoutonConnectDevice extends Component{
         super(props);
         // state
         this.state={
-            device : this.props.device
+            device : this.props.device, // objet "Device" utilisé par la librairie bluetooth
+            connection : false, // Si le device est connecté
+            connectionOptions : { // paramètres de connexion bluetooth
+                CONNECTOR_TYPE: "rfcomm", // protocole bluetooth
+                DELIMITER: "\n", // délimitation entre les messages -> vérifier
+                DEVICE_CHARSET: Platform.OS === "ios" ? 1536 : "utf-8", // Type d'écriture, fonction condensée : 1536 si IOS, utf-8 sinon (Android). (C'est utf-8, c'est juste que IOS à une autre manière de l'écrire)
+              },
         }
         // bind des fonctions
         this.afficheDevice = this.afficheDevice.bind(this);
@@ -24,6 +30,22 @@ class BoutonConnectDevice extends Component{
             console.log(err);
               alert(err);
           }
+    }
+
+    async connect(){
+        try{
+            conection = this.state.device.isConnected();
+
+            if(!connection){
+                console.log("Essaie de connexion");
+                connection = await this.props.device.connect(this.state.connectionOptions);
+            }
+
+        }
+        catch(error){
+
+        }
+
     }
 
 
