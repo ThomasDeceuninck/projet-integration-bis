@@ -9,7 +9,7 @@ class BlocBoutons extends Component{
         super(props);
         this.state={
             bluetoothEnabled : false,
-            device : "coucou",
+            device : {name : "coucou"},
 
         }
         this.changeUpperState=this.changeUpperState.bind(this);

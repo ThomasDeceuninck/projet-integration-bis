@@ -11,7 +11,6 @@ class BoutonConnectDevice extends Component{
         super(props);
         // state
         this.state={
-            device : this.props.device, // objet "Device" utilisé par la librairie bluetooth
             connection : false, // Si le device est connecté
             connectionOptions : { // paramètres de connexion bluetooth
                 CONNECTOR_TYPE: "rfcomm", // protocole bluetooth
@@ -21,6 +20,7 @@ class BoutonConnectDevice extends Component{
         }
         // bind des fonctions
         this.afficheDevice = this.afficheDevice.bind(this);
+        this.connect = this.connect.bind(this);
     }
 
     async afficheDevice(){
@@ -34,16 +34,26 @@ class BoutonConnectDevice extends Component{
 
     async connect(){
         try{
-            conection = this.state.device.isConnected();
+            if(this.state.device === "coucou"){
+                throw new Error(`HC-05 Non trouvé. On ne peut pas vérifier qu'il est connecté`);
+            }
+
+            let connection = this.props.device.isConnected(); // Apparement : isConnected() not a function
+            console.log(`est connecté ? : ${connection}`);
+            console.log(connection);
+
+            connection = false; // mis temporairement pour tester .connect()
 
             if(!connection){
                 console.log("Essaie de connexion");
                 connection = await this.props.device.connect(this.state.connectionOptions);
+                console.log("fin de connexion")
             }
 
         }
         catch(error){
-
+            alert(error);
+            console.log(error);
         }
 
     }
@@ -52,8 +62,8 @@ class BoutonConnectDevice extends Component{
     render(){
         return(
             <Button 
-                onPress={this.afficheDevice}
-                title="Connect to HC-06"
+                onPress={this.connect}
+                title={this.props.device.name}
                 color="#f00"
                 />
         )
@@ -61,5 +71,7 @@ class BoutonConnectDevice extends Component{
 }
 
 
+
+// Quand je définit device dans state comme étant this.props.state et que j'utilise .isConnected() -> erreur, j'ai gardé this.props.device>pas sûr que ce soit ça
 
 export default BoutonConnectDevice
