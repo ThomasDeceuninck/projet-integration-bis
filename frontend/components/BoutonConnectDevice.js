@@ -77,6 +77,13 @@ class BoutonConnectDevice extends Component{
 
         try {
           // remplir
+          let available = await this.props.device.available();
+
+          if(available > 0){
+            let data = await this.props.device.read();
+            console.log(data);
+          }
+          
         } catch (err) {
           console.log(err);
         }
