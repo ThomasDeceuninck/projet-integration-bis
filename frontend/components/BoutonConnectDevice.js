@@ -56,11 +56,41 @@ class BoutonConnectDevice extends Component{
                 
             }
 
+            this.initializeRead();
         }
         catch(error){
             alert(error);
             console.log(error);
         }
+
+    }
+
+
+    async disconnect(disconnected) {
+        // remplir
+    }
+
+
+    async performRead() {
+        // Faire en sorte quu'il vérifie si il y a des données disponibles à lire, lire tant qu'il y a des données
+        // Problème : il y aura toujours des données -> comment bloquer de temps en temps pour permettre les autres parties du code de tourner 
+
+        try {
+          // remplir
+        } catch (err) {
+          console.log(err);
+        }
+    }
+
+
+
+    initializeRead() {
+        // mets en place un eventlistener qui détecte quand des "socket" connections bluetooth se ferment, tombent, ont une erreur, ...
+        // Quand il détecte ça => on déconnecte le device
+        this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(() => this.disconnect(true)); 
+    
+        // Mets en place un timer, toutes les secondes (1000 msec) on éffectues performRead()
+        this.readInterval = setInterval(() => this.performRead(), 1000);
 
     }
 
