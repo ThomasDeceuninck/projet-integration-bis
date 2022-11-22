@@ -84,6 +84,7 @@ class BoutonConnectDevice extends Component{
                 let data = await this.props.device.read();
                 console.log(data);
               }
+            console.log("Sorti ............................................................................");
           }
           
         } catch (err) {
@@ -100,6 +101,10 @@ class BoutonConnectDevice extends Component{
     
         // Mets en place un timer, toutes les secondes (1000 msec) on éffectues performRead()
         this.readInterval = setInterval(() => this.performRead(), 1000);
+
+        // au lieu d'appeler un simple read tous les x temps on apelle une boucle infinie. Dans cette boucle infinie on vérifie le changement d'une certaine valeur 
+        // qui indique qu'une interruption est nécessaire (demande d'action du coté du gsm)
+        //this.performRead()
 
     }
 
