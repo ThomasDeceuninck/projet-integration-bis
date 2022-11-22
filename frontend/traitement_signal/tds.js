@@ -105,7 +105,7 @@ function transforme_fourier1(){//ne fonctionne pas
 
 
 //fctn fourier test 2
-function transforme_fourier2(){ //fonctionne
+function transforme_fourier2(){ //fonctionne //rajouter signal en param et retirer signale dedans
     var fft = require('fft-js').fft,
     fftUtil = require('fft-js').util;
     //var signal = [1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3];//par multiple de 2^n (longueur)
@@ -125,8 +125,34 @@ function transforme_fourier2(){ //fonctionne
     });
 
     console.log(both);
-    console.log(both[0]);
+    console.log(both[0].frequency);
+    return both;
     //affichage_fourier(both);
+}
+
+
+//comparaison de fourier
+function comparaison_fourier (sample1, sample2){
+    var signal = new Float32Array(1024);
+    for (var i = 0; i < 1024; i++) {
+        signal[i] = Math.sin(440 * Math.PI * 2 * (i / 44100));
+    }
+    let tf1 = transforme_fourier2(signal);
+    let tf2 = transforme_fourier2(signal);
+    let stock = 0;
+    for (let i=0; i<tf1.length; i++){
+        for (let j=0; j<tf2.length;j++){
+            if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>tf2[j].magnitude-1.0 && tf1[i].magnitude<tf2[j].magnitude+1.0){
+                console.log(stock);
+                stock+=1;
+                break
+            }
+        }
+    }
+    if (stock == tf1.length){
+        return true;
+    }
+    return false;
 }
 
 
@@ -200,6 +226,7 @@ console.log(amplitude_sup(sample));
 //transforme_fourier1();
 //transforme_fourier2();
 //affichage_fourier();
+console.log(comparaison_fourier(0,0));
 
 
 
