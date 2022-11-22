@@ -67,9 +67,10 @@ void loop() {
   
 
 /* communication serial : (à vérfieir, pas très prcis comme explication)
-- print() : transmet la données seolon son type
+- print() : transmet la données sous forme d'une chaine de caractères. Chaque caractère est écrit avec un bit. 
+            // On peut aussi préciser le type (binaire, decimal, hexadécimal, ...)
 - println() : idem mais avec un "/n" en plus
-- write() : écrit une chaine de caractère / caractère. 
+- write() : transmet les données sous forme de bits 
             Ex : si on envoie une variable avec un int dedans il le transformera en caractère selon le code ASCII 128 caractères
   ATTENTION à l'aire de changer en fonction du Baud rate
 */

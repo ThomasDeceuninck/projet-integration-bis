@@ -11,7 +11,7 @@ class BoutonConnectDevice extends Component{
         super(props);
         // state
         this.state={
-            connection : false, // Si le device est connecté -> sera utilisé ? Vérifier les cas problématiques où il y aura des déconnexions ...
+            connected : false, // Si le device est connecté -> sera utilisé ? Vérifier les cas problématiques où il y aura des déconnexions ...
             connectionOptions : { // paramètres de connexion bluetooth
                 CONNECTOR_TYPE: "rfcomm", // protocole bluetooth
                 DELIMITER: "\n", // délimitation entre les messages -> vérifier
@@ -21,6 +21,8 @@ class BoutonConnectDevice extends Component{
         // bind des fonctions
         this.afficheDevice = this.afficheDevice.bind(this);
         this.connect = this.connect.bind(this);
+        this.disconnect = this.disconnect.bind(this);
+        this.tryDisconnect = this.tryDisconnect.bind(this);
     }
 
     async afficheDevice(){
@@ -41,6 +43,7 @@ class BoutonConnectDevice extends Component{
             let connection = await this.props.device.isConnected();  // erreur quand on a pas défini le device
             console.log(`est connecté ? : ${connection}`);
             console.log(connection);
+            
 
 
             if(!connection){
@@ -48,6 +51,7 @@ class BoutonConnectDevice extends Component{
                     console.log("Essaie de connexion");
                     connection = await this.props.device.connect(this.state.connectionOptions);
                     console.log("Connecté")
+                    this.setState({connected : connection}); // mets dans le state que le device est connecté ou non
                 }
                 catch{
                     console.log("Une erreur c'est produite lors de la connexion");
@@ -66,8 +70,16 @@ class BoutonConnectDevice extends Component{
     }
 
 
-    async disconnect(disconnected) {
-        // remplir
+    async disconnect() {
+        
+        try {
+            clearInterval(this.readInterval); // désactive la lecture toutes les secondes
+            let disconnected = await this.props.device.disconnect();
+            console.log("[Phone]Disconnected gracefully");
+            this.setState({connected : !disconnected});
+          } catch(error) {
+            console.log(error);
+          }
     }
 
 
@@ -82,7 +94,7 @@ class BoutonConnectDevice extends Component{
           if(available > 0){
             for (let i = 0; i < available; i++) {
                 let data = await this.props.device.read();
-                console.log(data);
+                console.log("data "+ data);
               }
             console.log("Sorti ............................................................................");
           }
@@ -93,11 +105,31 @@ class BoutonConnectDevice extends Component{
     }
 
 
+    async tryDisconnect(){
+        try{
+            let isConnected = await this.props.device.isConnected();
+            if(isConnected){
+                // considéré comme encore connecté : 
+                this.disconnect();
+            }
+            else{
+                // Si on arrive pas à se déconnecter avec .disconnect() de la librairie (car le bracelet est éteint, le bluetooth a été désactivé, etc.)
+                clearInterval(this.readInterval);
+                this.setState({connected : false});
+                console.log("[Phone]Disconnected ungracefully");
+            }
+        } catch{
+            console.log(error);
+        }
+    }
+
+
+
 
     initializeRead() {
         // mets en place un eventlistener qui détecte quand des "socket" connections bluetooth se ferment, tombent, ont une erreur, ...
         // Quand il détecte ça => on déconnecte le device
-        this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(() => this.disconnect(true)); 
+        this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(() => this.tryDisconnect()); 
     
         // Mets en place un timer, toutes les secondes (1000 msec) on éffectues performRead()
         this.readInterval = setInterval(() => this.performRead(), 1000);
