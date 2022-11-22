@@ -80,8 +80,10 @@ class BoutonConnectDevice extends Component{
           let available = await this.props.device.available();
 
           if(available > 0){
-            let data = await this.props.device.read();
-            console.log(data);
+            for (let i = 0; i < available; i++) {
+                let data = await this.props.device.read();
+                console.log(data);
+              }
           }
           
         } catch (err) {
