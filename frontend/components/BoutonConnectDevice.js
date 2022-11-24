@@ -21,8 +21,7 @@ class BoutonConnectDevice extends Component{
         // bind des fonctions
         this.afficheDevice = this.afficheDevice.bind(this);
         this.connect = this.connect.bind(this);
-        this.disconnect = this.disconnect.bind(this);
-        this.tryDisconnect = this.tryDisconnect.bind(this);
+
     }
 
     async afficheDevice(){
@@ -36,11 +35,11 @@ class BoutonConnectDevice extends Component{
 
     async connect(){
         try{
-            if(this.state.device === "coucou"){
+            if(this.props.selectedDevice === null){
                 throw new Error(`HC-05 Non trouvé. On ne peut pas vérifier qu'il est connecté`);
             }
 
-            let connection = await this.props.device.isConnected();  // erreur quand on a pas défini le device
+            let connection = await this.props.selectedDevice.isConnected();  // erreur quand on a pas défini le device
             console.log(`est connecté ? : ${connection}`);
             console.log(connection);
             
@@ -49,9 +48,9 @@ class BoutonConnectDevice extends Component{
             if(!connection){
                 try{
                     console.log("Essaie de connexion");
-                    connection = await this.props.device.connect(this.state.connectionOptions);
+                    connection = await this.props.selectedDevice.connect(this.state.connectionOptions);
                     console.log("Connecté")
-                    this.setState({connected : connection}); // mets dans le state que le device est connecté ou non
+                    this.props.changeUpperStateConnectedDevice(this.props.selectedDevice); // mets dans le state que le device est connecté ou non
                 }
                 catch{
                     console.log("Une erreur c'est produite lors de la connexion");
@@ -74,7 +73,7 @@ class BoutonConnectDevice extends Component{
         
         try {
             clearInterval(this.readInterval); // désactive la lecture toutes les secondes
-            let disconnected = await this.props.device.disconnect();
+            let disconnected = await this.props.connectedDevice.disconnect();
             console.log("[Phone]Disconnected gracefully");
             this.setState({connected : !disconnected});
           } catch(error) {
@@ -83,18 +82,19 @@ class BoutonConnectDevice extends Component{
     }
 
 
-    async performRead() {
+    async performRead1() {
         // Faire en sorte quu'il vérifie si il y a des données disponibles à lire, lire tant qu'il y a des données
         // Problème : il y aura toujours des données -> comment bloquer de temps en temps pour permettre les autres parties du code de tourner 
 
         try {
           // remplir
-          let available = await this.props.device.available();
+          let available = await this.props.connectedDevice.available();
 
           if(available > 0){
             for (let i = 0; i < available; i++) {
-                let data = await this.props.device.read();
+                let data = await this.props.connectedDevice.read();
                 console.log("data "+ data);
+                // ECRIRE EN DB
               }
             console.log("Sorti ............................................................................");
           }
@@ -105,9 +105,25 @@ class BoutonConnectDevice extends Component{
     }
 
 
+    async performRead2() {
+        // Boucle de lecture infinie et vérification d'une valeur state qui indique si on a besoin d'interrompre la lecture pour lancer une action coté gsm
+        // Arrive à lire quand il n'y a pas de donnée available ? 
+        // Vérification du state toutes les X boucles ? avec un setInterval ?
+        // esayyer un setInterval sans delay
+
+        try {
+          // REMPLIR
+          
+          
+        } catch (err) {
+          console.log(err);
+        }
+    }
+
+
     async tryDisconnect(){
         try{
-            let isConnected = await this.props.device.isConnected();
+            let isConnected = await this.props.connectedDevice.isConnected();
             if(isConnected){
                 // considéré comme encore connecté : 
                 this.disconnect();
@@ -124,20 +140,30 @@ class BoutonConnectDevice extends Component{
     }
 
 
-
-
     initializeRead() {
         // mets en place un eventlistener qui détecte quand des "socket" connections bluetooth se ferment, tombent, ont une erreur, ...
         // Quand il détecte ça => on déconnecte le device
         this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(() => this.tryDisconnect()); 
     
         // Mets en place un timer, toutes les secondes (1000 msec) on éffectues performRead()
-        this.readInterval = setInterval(() => this.performRead(), 1000);
+        this.readInterval = setInterval(() => this.performRead1(), 1000);
 
         // au lieu d'appeler un simple read tous les x temps on apelle une boucle infinie. Dans cette boucle infinie on vérifie le changement d'une certaine valeur 
         // qui indique qu'une interruption est nécessaire (demande d'action du coté du gsm)
-        //this.performRead()
+        //this.performRead2()
 
+    }
+
+
+    // devra disparaitre plus tard
+    testIfThereIsADeviceSelected(){
+        if(this.props.selectedDevice === null){
+            return("no device selected");
+        }
+        else{
+            return(this.props.selectedDevice.name);
+            
+        }
     }
 
 
@@ -145,7 +171,7 @@ class BoutonConnectDevice extends Component{
         return(
             <Button 
                 onPress={this.connect}
-                title={this.props.device.name}
+                title={this.testIfThereIsADeviceSelected()}
                 color="#f00"
                 />
         )

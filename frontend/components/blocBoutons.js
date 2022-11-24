@@ -9,19 +9,15 @@ class BlocBoutons extends Component{
         super(props);
         this.state={
             bluetoothEnabled : false,
-            device : {name : "coucou"},
+            //device : {name : "coucou"},
 
         }
-        this.changeUpperState=this.changeUpperState.bind(this);
+
         this.checkBluetoothEnabled=this.checkBluetoothEnabled.bind(this);
         this.alertState=this.alertState.bind(this);
     }
 
-    async changeUpperState(value){
-        this.setState({"device" : value});
-        //this.setState({[whatToChange] : value});
-
-    }
+    
 
     async checkBluetoothEnabled() {
         try {
@@ -45,9 +41,9 @@ class BlocBoutons extends Component{
     render(){
         return(
             <View>
-                <BoutonScanBluetooth changeUpperState={this.changeUpperState}/>
+                <BoutonScanBluetooth changeUpperStateSelectedDevice={this.props.changeUpperStateSelectedDevice}/>
 
-                <BoutonConnectDevice device={this.state.device}/>
+                <BoutonConnectDevice selectedDevice={this.props.selectedDevice} changeUpperStateConnectedDevice={this.props.changeUpperStateConnectedDevice}/>
 
                 <Button 
                 onPress={this.alertState}

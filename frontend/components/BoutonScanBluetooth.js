@@ -77,7 +77,7 @@ class BoutonScanBluetooth extends Component{
             console.log(hc05Device);
 
             if(hc05Device){
-              await this.props.changeUpperState(hc05Device);
+              await this.props.changeUpperStateSelectedDevice(hc05Device);
             }
             else{ // si = Undefined ( si il ne l'a pas trouvé)
               console.log("HC-05 n'est pas disponible à proximité");
