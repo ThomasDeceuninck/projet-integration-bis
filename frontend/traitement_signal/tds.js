@@ -139,12 +139,12 @@ function comparaison_fourier (sample1, sample2){
     }
     let tf1 = transforme_fourier2(signal);
     let tf2 = transforme_fourier2(signal);
-    let stock = 0;
+    let stocks = 0;
     for (let i=0; i<tf1.length; i++){
         for (let j=0; j<tf2.length;j++){
             if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>tf2[j].magnitude-1.0 && tf1[i].magnitude<tf2[j].magnitude+1.0){
                 console.log(stock);
-                stock+=1;
+                stocks += 1;
                 break
             }
         }
