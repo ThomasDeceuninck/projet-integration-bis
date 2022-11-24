@@ -50,7 +50,8 @@ class BoutonConnectDevice extends Component{
                     console.log("Essaie de connexion");
                     connection = await this.props.selectedDevice.connect(this.state.connectionOptions);
                     console.log("Connecté")
-                    this.props.changeUpperStateConnectedDevice(this.props.selectedDevice); // mets dans le state que le device est connecté ou non
+                    this.props.changeUpperStateConnectedDevice(this.props.selectedDevice); // mets dans le state que le device est connecté 
+                    this.initializeRead();
                 }
                 catch{
                     console.log("Une erreur c'est produite lors de la connexion");
@@ -59,7 +60,7 @@ class BoutonConnectDevice extends Component{
                 
             }
 
-            this.initializeRead();
+            
         }
         catch(error){
             alert(error);
@@ -87,7 +88,6 @@ class BoutonConnectDevice extends Component{
         // Problème : il y aura toujours des données -> comment bloquer de temps en temps pour permettre les autres parties du code de tourner 
 
         try {
-          // remplir
           let available = await this.props.connectedDevice.available();
 
           if(available > 0){
