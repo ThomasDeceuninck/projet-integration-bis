@@ -43,13 +43,14 @@ class BluetoothOn extends Component {
       actionRequired : null,
       //  indiquant qu'une action est demandé du coté téléphone. Cette variable est utilisée pour stopper la boucle d'écoute.
       // on mettra un string ou autre indiquant quelle action est demandée
-      
+      soundData:[], // Array où on stocke le valeurs envoyées par le bracelet.
 
     }
 
     this.changeUpperStateSelectedDevice = this.changeUpperStateSelectedDevice.bind(this);
     this.changeUpperStateConnectedDevice = this.changeUpperStateConnectedDevice.bind(this);
     this.initializeRead = this.initializeRead.bind(this);
+    this.afficheSoundData = this.afficheSoundData.bind(this);
   }
 
   async changeUpperStateSelectedDevice(value){
@@ -126,7 +127,8 @@ class BluetoothOn extends Component {
         for (let i = 0; i < available; i++) {
             let data = await this.state.connectedDevice.read();
             console.log("data "+ data);
-            // ECRIRE EN DB
+            
+            this.state.soundData.push(data);
           }
         console.log("Sorti ............................................................................");
       }
@@ -152,7 +154,8 @@ class BluetoothOn extends Component {
           for (let i = 0; i < available; i++) {
               let data = await this.state.connectedDevice.read();
               console.log("data "+ data);
-              // ECRIRE EN DB
+              
+              this.state.soundData.push(data);
   
               if(i>100){
                 console.log("100");
@@ -170,6 +173,9 @@ class BluetoothOn extends Component {
     }
   }
 
+  afficheSoundData(){
+    alert(this.state.soundData);
+  }
 
 
 
@@ -179,8 +185,10 @@ class BluetoothOn extends Component {
       changeUpperStateSelectedDevice={this.changeUpperStateSelectedDevice} 
       changeUpperStateConnectedDevice={this.changeUpperStateConnectedDevice} 
       initializeRead={this.initializeRead}
+      afficheSoundData={this.afficheSoundData}
       selectedDevice={this.state.selectedDevice} 
-      connectedDevice={this.state.connectedDevice}/>
+      connectedDevice={this.state.connectedDevice}
+      />
     );
   }
 }

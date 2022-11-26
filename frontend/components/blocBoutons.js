@@ -51,7 +51,7 @@ class BlocBoutons extends Component{
                 />
 
                 <Button 
-                onPress={this.alertState}
+                onPress={this.props.afficheSoundData}
                 title="Afficher state"
                 color="#f00"
                 />
