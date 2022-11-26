@@ -52,10 +52,10 @@ class BoutonScanBluetooth extends Component{
               }
             
             this.setState({scanningForBluetooth : true});
-            console.log("[Phone] scanning for bluetooth"); 
+            console.log("[Phone] scan des device Bluetooth à proximité"); 
             let devices = await RNBluetoothClassic.startDiscovery();
             this.setState({scanningForBluetooth : false});
-            console.log("[Phone] stopped scanning for bluetooth");
+            console.log("[Phone] Fin du scan Bluetooth");
 
 
             
@@ -65,16 +65,11 @@ class BoutonScanBluetooth extends Component{
             let allNames = await devices.map(x => x.name);
             let allNamesText = await allNames.join("\n");
             alert(allNamesText);
-            console.log(allNamesText);
+            //console.log(allNamesText);
 
-            /*
-            await console.log(devices);
-            await console.log(devices.length);
-            await devices.map(x => console.log(x.name));
-            */
 
             let hc05Device = await devices.find(this.isHC05);
-            console.log(hc05Device);
+            //console.log(hc05Device);
 
             if(hc05Device){
               await this.props.changeUpperStateSelectedDevice(hc05Device);

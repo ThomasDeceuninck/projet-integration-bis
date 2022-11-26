@@ -9,16 +9,13 @@ import { Button, PermissionsAndroid } from 'react-native';
 class BoutonConnectDevice extends Component{
     constructor(props){
         super(props);
-        // state
-        this.state={
-            
+        this.state={    
             connectionOptions : { // paramètres de connexion bluetooth
                 CONNECTOR_TYPE: "rfcomm", // protocole bluetooth
                 DELIMITER: "\n", // délimitation entre les messages -> vérifier
                 DEVICE_CHARSET: Platform.OS === "ios" ? 1536 : "utf-8", // Type d'écriture, fonction condensée : 1536 si IOS, utf-8 sinon (Android). (C'est utf-8, c'est juste que IOS à une autre manière de l'écrire)
               },
         }
-        // bind des fonctions
         this.afficheDevice = this.afficheDevice.bind(this);
         this.connect = this.connect.bind(this);
 
@@ -40,34 +37,26 @@ class BoutonConnectDevice extends Component{
             }
 
             let connection = await this.props.selectedDevice.isConnected();  // erreur quand on a pas défini le device
-            console.log(`est connecté ? : ${connection}`);
-            console.log(connection);
-            
-
 
             if(!connection){
                 try{
-                    console.log("Essaie de connexion");
+                    console.log("[Phone] Tentative de connexion");
                     connection = await this.props.selectedDevice.connect(this.state.connectionOptions);
-                    console.log("Connecté")
+                    console.log("[Phone] Connecté")
                     this.props.changeUpperStateConnectedDevice(this.props.selectedDevice); // mets dans le state que le device est connecté 
                     try{
                         this.props.initializeRead();
                     } catch{
-                        console.log("Une erreur s'est produit lors de la lecture");
+                        console.log("[Phone] Une erreur s'est produit lors de la lecture");
                     }
                     
                 }
                 catch{
-                    console.log("Une erreur c'est produite lors de la connexion");
+                    console.log("[Phone] Une erreur c'est produite lors de la connexion");
                     alert("Une erreur c'est produite lors de la connexion");
                 }
-                
             }
-
-            
-        }
-        catch(error){
+        } catch(error){
             alert(error);
             console.log(error);
         }

@@ -10,29 +10,6 @@ import BlocBoutons from './components/blocBoutons';
 //import { experimentalStyled } from '@mui/material';
 
 
-
-
-/* // Code de base de App.js
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-*/
-
-
 class BluetoothOn extends Component {
 
   constructor(props){
@@ -64,29 +41,27 @@ class BluetoothOn extends Component {
 
 
   initializeRead() {
-    // mets en place un eventlistener qui détecte quand des "socket" connections bluetooth se ferment, tombent, ont une erreur, ...
-    // Quand il détecte ça => on déconnecte le device
+    /** 
+     * Mets en place un eventlistener qui détecte quand des "socket" connections bluetooth se ferment, tombent, ont une erreur, ...
+     * Quand il détecte ça => on déconnecte le device
+     * 
+     * Lance également la boucle de lecture avec this.performRead().
+     */
     this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(() => this.tryDisconnect()); 
-
-    // Mets en place un timer, toutes les secondes (1000 msec) on éffectues performRead()
-    //                 this.readInterval = setInterval(() => this.performRead1(), 1000);
-
-    // Boucle de lecture et vérifie de temps en teps lorsqu'il y a une action demandée du coté gsm
-    this.performRead2();
-
-    // au lieu d'appeler un simple read tous les x temps on apelle une boucle infinie. Dans cette boucle infinie on vérifie le changement d'une certaine valeur 
-    // qui indique qu'une interruption est nécessaire (demande d'action du coté du gsm)
-    //this.performRead2()
+    this.performRead();
   }
 
 
 
 
   async tryDisconnect(){
+    /**
+     * Gère la déconnexion bluetooth du coté du gsm. Si le device bluetooth est encore connecté il s'en déconnecte avec 
+     * this.disconnect(). Si ce n'est pas le cas on ne peut qu'indiquer que le device est déconnecté.
+     */
     try{
       let isConnected = await this.state.connectedDevice.isConnected();
       if(isConnected){
-          // considéré comme encore connecté : 
           this.disconnect();
       }
       else{
@@ -104,8 +79,10 @@ class BluetoothOn extends Component {
 
 
   async disconnect() {   
+    /**
+     * Déconnecte un device bluetooth encore connecté.
+     */
     try {
-      clearInterval(this.readInterval); // désactive la lecture toutes les secondes
       let disconnected = await this.state.disconnect();
       console.log("[Phone]Disconnected gracefully");
       this.setState({connected : !disconnected});
@@ -116,36 +93,17 @@ class BluetoothOn extends Component {
 
 
 
-  async performRead1() {
-    // Faire en sorte quu'il vérifie si il y a des données disponibles à lire, lire tant qu'il y a des données
-    // Problème : il y aura toujours des données -> comment bloquer de temps en temps pour permettre les autres parties du code de tourner 
 
-    try {
-      let available = await this.state.connectedDevice.available();
-
-      if(available > 0){
-        for (let i = 0; i < available; i++) {
-            let data = await this.state.connectedDevice.read();
-            console.log("data "+ data);
-            
-            this.state.soundData.push(data);
-          }
-        console.log("Sorti ............................................................................");
-      }
-      
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-
-
-  async performRead2() {
-    // Boucle de lecture infinie et vérification d'une valeur state qui indique si on a besoin d'interrompre la lecture pour lancer une action coté gsm
-    // Arrive à lire quand il n'y a pas de donnée available ? 
-    // Vérification du state toutes les X boucles ? avec un setInterval ?
-    // esayyer un setInterval sans delay
-
+  async performRead() {
+    /**
+     * Lance une boucle de lecture. On vérifie dans cette boucle si il y a des valeurs à lire et leur nombre. On lance ensuite une
+     * autre boucle à l'interieur de la première qui lit à chaque fois une nouvelle donnée et la stocke dans this.state.soundData.
+     * On sort de cette deuxième boucle dans deux cas : 
+     *  - Plus de données à lire
+     *  - On atteint 100 données lues
+     * 
+     * Quantd on sort de la deuxième boucle on vérifie si une acion est demandée du coté du gsm.
+     */
     try {
       while(true){
         let available = await this.state.connectedDevice.available();
@@ -153,19 +111,18 @@ class BluetoothOn extends Component {
         if(available > 0){
           for (let i = 0; i < available; i++) {
               let data = await this.state.connectedDevice.read();
-              console.log("data "+ data);
+              //console.log("[data]"+ data);
               
               this.state.soundData.push(data);
-  
               if(i>100){
-                console.log("100");
-                if(this.state.actionRequired !== null){
-                  console.log("action demandée");
-                }
                 break;
               }
           }
-          console.log("Sorti ............................................................................");
+          console.log("verif action"); // à enlever
+          if(this.state.actionRequired !== null){
+            console.log("action demandée");
+            // FONCTION DE GESTION D'ACTION
+          }
         }
       }   
     } catch (err) {
