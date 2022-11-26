@@ -30,7 +30,7 @@ digitalWrite(ledTest, LOW);
 
 
 void loop() {
-  /* Pour visualiser plus facilement sur le traceur série
+  /*
   Serial.print(0);
   Serial.print(" ");
   Serial.print(1000);

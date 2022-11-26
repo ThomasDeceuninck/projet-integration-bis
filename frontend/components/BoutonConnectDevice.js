@@ -51,7 +51,12 @@ class BoutonConnectDevice extends Component{
                     connection = await this.props.selectedDevice.connect(this.state.connectionOptions);
                     console.log("Connecté")
                     this.props.changeUpperStateConnectedDevice(this.props.selectedDevice); // mets dans le state que le device est connecté 
-                    this.initializeRead();
+                    try{
+                        this.props.initializeRead();
+                    } catch{
+                        console.log("Une erreur s'est produit lors de la lecture");
+                    }
+                    
                 }
                 catch{
                     console.log("Une erreur c'est produite lors de la connexion");
@@ -69,90 +74,6 @@ class BoutonConnectDevice extends Component{
 
     }
 
-
-    async disconnect() {
-        
-        try {
-            clearInterval(this.readInterval); // désactive la lecture toutes les secondes
-            let disconnected = await this.props.connectedDevice.disconnect();
-            console.log("[Phone]Disconnected gracefully");
-            this.setState({connected : !disconnected});
-          } catch(error) {
-            console.log(error);
-          }
-    }
-
-
-    async performRead1() {
-        // Faire en sorte quu'il vérifie si il y a des données disponibles à lire, lire tant qu'il y a des données
-        // Problème : il y aura toujours des données -> comment bloquer de temps en temps pour permettre les autres parties du code de tourner 
-
-        try {
-          let available = await this.props.connectedDevice.available();
-
-          if(available > 0){
-            for (let i = 0; i < available; i++) {
-                let data = await this.props.connectedDevice.read();
-                console.log("data "+ data);
-                // ECRIRE EN DB
-              }
-            console.log("Sorti ............................................................................");
-          }
-          
-        } catch (err) {
-          console.log(err);
-        }
-    }
-
-
-    async performRead2() {
-        // Boucle de lecture infinie et vérification d'une valeur state qui indique si on a besoin d'interrompre la lecture pour lancer une action coté gsm
-        // Arrive à lire quand il n'y a pas de donnée available ? 
-        // Vérification du state toutes les X boucles ? avec un setInterval ?
-        // esayyer un setInterval sans delay
-
-        try {
-          // REMPLIR
-          
-          
-        } catch (err) {
-          console.log(err);
-        }
-    }
-
-
-    async tryDisconnect(){
-        try{
-            let isConnected = await this.props.connectedDevice.isConnected();
-            if(isConnected){
-                // considéré comme encore connecté : 
-                this.disconnect();
-            }
-            else{
-                // Si on arrive pas à se déconnecter avec .disconnect() de la librairie (car le bracelet est éteint, le bluetooth a été désactivé, etc.)
-                clearInterval(this.readInterval);
-                this.setState({connected : false});
-                console.log("[Phone]Disconnected ungracefully");
-            }
-        } catch{
-            console.log(error);
-        }
-    }
-
-
-    initializeRead() {
-        // mets en place un eventlistener qui détecte quand des "socket" connections bluetooth se ferment, tombent, ont une erreur, ...
-        // Quand il détecte ça => on déconnecte le device
-        this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(() => this.tryDisconnect()); 
-    
-        // Mets en place un timer, toutes les secondes (1000 msec) on éffectues performRead()
-        this.readInterval = setInterval(() => this.performRead1(), 1000);
-
-        // au lieu d'appeler un simple read tous les x temps on apelle une boucle infinie. Dans cette boucle infinie on vérifie le changement d'une certaine valeur 
-        // qui indique qu'une interruption est nécessaire (demande d'action du coté du gsm)
-        //this.performRead2()
-
-    }
 
 
     // devra disparaitre plus tard

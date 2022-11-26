@@ -43,7 +43,12 @@ class BlocBoutons extends Component{
             <View>
                 <BoutonScanBluetooth changeUpperStateSelectedDevice={this.props.changeUpperStateSelectedDevice}/>
 
-                <BoutonConnectDevice selectedDevice={this.props.selectedDevice} connectedDevice={this.props.connectedDevice} changeUpperStateConnectedDevice={this.props.changeUpperStateConnectedDevice}/>
+                <BoutonConnectDevice 
+                selectedDevice={this.props.selectedDevice} 
+                connectedDevice={this.props.connectedDevice} 
+                changeUpperStateConnectedDevice={this.props.changeUpperStateConnectedDevice}
+                initializeRead={this.props.initializeRead}
+                />
 
                 <Button 
                 onPress={this.alertState}
