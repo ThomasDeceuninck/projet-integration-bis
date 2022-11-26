@@ -11,7 +11,7 @@ class BoutonConnectDevice extends Component{
         super(props);
         // state
         this.state={
-            connected : false, // Si le device est connecté -> sera utilisé ? Vérifier les cas problématiques où il y aura des déconnexions ...
+            
             connectionOptions : { // paramètres de connexion bluetooth
                 CONNECTOR_TYPE: "rfcomm", // protocole bluetooth
                 DELIMITER: "\n", // délimitation entre les messages -> vérifier

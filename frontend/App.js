@@ -7,6 +7,7 @@ import RNBluetoothClassic, {
 } from 'react-native-bluetooth-classic';
 
 import BlocBoutons from './components/blocBoutons';
+//import { experimentalStyled } from '@mui/material';
 
 
 
@@ -39,7 +40,10 @@ class BluetoothOn extends Component {
     this.state = {
       connectedDevice : null, // Device connecté
       selectedDevice : null, // device bluetooth sélectionné pour la connection. Sera retiré plus tard quand on aura une liste (adaptative)
-      actionRequired : false // Bolléen indiquant qu'une action est demandé du coté téléphone. Cette variable est utilisée pour stopper la boucle d'écoute.
+      actionRequired : null,
+      //  indiquant qu'une action est demandé du coté téléphone. Cette variable est utilisée pour stopper la boucle d'écoute.
+      // on mettra un string ou autre indiquant quelle action est demandée
+      
 
     }
 
@@ -64,7 +68,10 @@ class BluetoothOn extends Component {
     this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(() => this.tryDisconnect()); 
 
     // Mets en place un timer, toutes les secondes (1000 msec) on éffectues performRead()
-    this.readInterval = setInterval(() => this.performRead1(), 1000);
+    //                 this.readInterval = setInterval(() => this.performRead1(), 1000);
+
+    // Boucle de lecture et vérifie de temps en teps lorsqu'il y a une action demandée du coté gsm
+    this.performRead2();
 
     // au lieu d'appeler un simple read tous les x temps on apelle une boucle infinie. Dans cette boucle infinie on vérifie le changement d'une certaine valeur 
     // qui indique qu'une interruption est nécessaire (demande d'action du coté du gsm)
@@ -138,9 +145,26 @@ class BluetoothOn extends Component {
     // esayyer un setInterval sans delay
 
     try {
-      // REMPLIR
+      while(true){
+        let available = await this.state.connectedDevice.available();
       
-      
+        if(available > 0){
+          for (let i = 0; i < available; i++) {
+              let data = await this.state.connectedDevice.read();
+              console.log("data "+ data);
+              // ECRIRE EN DB
+  
+              if(i>100){
+                console.log("100");
+                if(this.state.actionRequired !== null){
+                  console.log("action demandée");
+                }
+                break;
+              }
+          }
+          console.log("Sorti ............................................................................");
+        }
+      }   
     } catch (err) {
       console.log(err);
     }
