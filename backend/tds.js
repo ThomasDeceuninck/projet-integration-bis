@@ -23,12 +23,14 @@ var database =  new sq.Database('./testdb.db3', (err) => {
 async function stockage_flux(new_data){
     //dés qu'une valeur arrive la stock en db (tableua pour ca)
     //si longueur suffisante appelle separateur_de_flux
+    //set interval (se renseigner)
+    //const words = str.split(' '); 
     let verif = await getRecords("SELECT sample_flux FROM stockage_flux");
     let manip_verif = verif[0].sample_flux;
     let stock = '';
     let verification2 = [];
     for(let i=1; i<manip_verif.length-1; i++){
-        if(manip_verif[i]!=','){
+        if(manip_verif[i]!==','){
             stock += manip_verif[i];
         }
         else{
@@ -76,7 +78,8 @@ async function amplitude_sup(sample){
 
 //fonction de traitement de signal rec mot
 function reconnaissance_de_mot(sample){
-    requete_mot();
+    //faire une requete db avec les mot enregistre + boucle
+    comparaison_fourier(sample, /*mot_enregistre*/);
     return false;
 }
 
@@ -105,14 +108,14 @@ function transforme_fourier1(){//ne fonctionne pas
 
 
 //fctn fourier test 2
-function transforme_fourier2(){ //fonctionne //rajouter signal en param et retirer signale dedans
+function transforme_fourier2(signal){ //fonctionne //rajouter signal en param et retirer signale dedans
     var fft = require('fft-js').fft,
     fftUtil = require('fft-js').util;
     //var signal = [1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3];//par multiple de 2^n (longueur)
-    var signal = new Float32Array(1024);
+    /*var signal = new Float32Array(1024);
     for (var i = 0; i < 1024; i++) {
         signal[i] = Math.sin(440 * Math.PI * 2 * (i / 44100));
-    }
+    }*/
 
     var phasors = fft(signal);
 
@@ -133,54 +136,27 @@ function transforme_fourier2(){ //fonctionne //rajouter signal en param et retir
 
 //comparaison de fourier
 function comparaison_fourier (sample1, sample2){
-    var signal = new Float32Array(1024);
+    /*var signal = new Float32Array(1024);
     for (var i = 0; i < 1024; i++) {
         signal[i] = Math.sin(440 * Math.PI * 2 * (i / 44100));
-    }
-    let tf1 = transforme_fourier2(signal);
-    let tf2 = transforme_fourier2(signal);
-    let stocks = 0;
+    }*/
+    let tf1 = transforme_fourier2(sample1);//transforme_fourier2(signal);
+    let tf2 = sample2;//transforme_fourier2(signal);
+    let stock = 0;
     for (let i=0; i<tf1.length; i++){
         for (let j=0; j<tf2.length;j++){
             if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>tf2[j].magnitude-1.0 && tf1[i].magnitude<tf2[j].magnitude+1.0){
                 console.log(stock);
-                stocks += 1;
+                stock+=1;
                 break
-            }
+            } 
         }
     }
     if (stock == tf1.length){
+        requete_mot();
         return true;
     }
     return false;
-}
-
-
-//tentative de tableau js (fctn pas)
-function affichage_fourier(both){
-    var Plotly = require('plotly.js-dist');
-    let xArray = both.map(x => x.frequency);
-    let yArray = both.map(x => x.magnitude);
-
-    //var xArray = [50,60,70,80,90,100,110,120,130,140,150];
-    //var yArray = [7,8,8,9,9,9,10,11,14,14,15];
-
-    // Define Data
-    var data = [{
-        x: xArray,
-        y: yArray,
-        mode:"markers",
-        type:"scatter"
-    }];
-
-// Define Layout
-    var layout = {
-        xaxis: {range: [0, 511], title: "Square Meters"},
-        yaxis: {range: [-20, 20], title: "Price in Millions"},
-        title: "House Prices vs. Size"
-    };
-
-    Plotly.newPlot("myPlot", data, layout);
 }
 
 
@@ -258,4 +234,33 @@ console.log(comparaison_fourier(0,0));
   async function asyncCall(sql){
     records=await getRecords(sql);
     console.log(recup);
+}*/
+
+
+
+//tentative de tableau js (fctn pas)
+/*function affichage_fourier(both){
+    var Plotly = require('plotly.js-dist');
+    let xArray = both.map(x => x.frequency);
+    let yArray = both.map(x => x.magnitude);
+
+    //var xArray = [50,60,70,80,90,100,110,120,130,140,150];
+    //var yArray = [7,8,8,9,9,9,10,11,14,14,15];
+
+    // Define Data
+    var data = [{
+        x: xArray,
+        y: yArray,
+        mode:"markers",
+        type:"scatter"
+    }];
+
+// Define Layout
+    var layout = {
+        xaxis: {range: [0, 511], title: "Square Meters"},
+        yaxis: {range: [-20, 20], title: "Price in Millions"},
+        title: "House Prices vs. Size"
+    };
+
+    Plotly.newPlot("myPlot", data, layout);
 }*/
