@@ -59,7 +59,7 @@ class BoutonScanBluetooth extends Component{
 
 
             
-            console.log(Object.keys(devices[0])); //pour afficher toutes les clés qu'il y a dans un objet "Device"
+            //console.log(Object.keys(devices[0])); //pour afficher toutes les clés qu'il y a dans un objet "Device"
 
             // Pour afficher sur l'app tous les appareils bluetooth à proximité (temporaire)
             let allNames = await devices.map(x => x.name);

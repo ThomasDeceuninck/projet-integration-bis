@@ -118,7 +118,7 @@ class BluetoothOn extends Component {
                 break;
               }
           }
-          console.log("verif action"); // à enlever
+          //console.log("verif action"); // à enlever
           if(this.state.actionRequired !== null){
             console.log("action demandée");
             // FONCTION DE GESTION D'ACTION
@@ -131,7 +131,7 @@ class BluetoothOn extends Component {
   }
 
   afficheSoundData(){
-    alert(this.state.soundData);
+    alert(this.state.soundData.length);
   }
 
 
