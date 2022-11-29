@@ -114,10 +114,15 @@ class BluetoothOn extends Component {
               //console.log("[data]"+ data);
               
               this.state.soundData.push(data);
-              if(i>100){
+              if(i == 128){
                 break;
               }
           }
+
+          if(this.state.soundData.length >= 512){
+            // appel de la fonction thomas avec this.state.soundData[:512]
+          }
+
           //console.log("verif action"); // à enlever
           if(this.state.actionRequired !== null){
             console.log("action demandée");
