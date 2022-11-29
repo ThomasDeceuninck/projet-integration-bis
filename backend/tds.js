@@ -46,38 +46,30 @@ async function amplitude_sup(sample){
 
 
 //fonction de traitement de signal rec mot
-function reconnaissance_de_mot(sample){
+async function reconnaissance_de_mot(sample){
     //faire une requete db avec les mot enregistre + boucle
-    comparaison_fourier(sample, /*mot_enregistre*/);
+    let data = await getRecords("SELECT sample_enregistre FROM mot_enregistre;");
+    //string_to_tab(data);
+    //let tab_data = [];
+    for(let i=0; i<data.length; i++){
+        let stack = data[i].sample_enregistre.split(';');
+        stack.pop();
+        let tab_mot = stack.map(function (val) {
+            let stack2 = val.split(',');
+            return {frequency: stack2[0], magnitude: stack2[1]};
+        });
+        comparaison_fourier(sample, tab_mot);
+        console.log(data[i].sample_enregistre);
+        console.log(stack);
+        console.log(tab_mot[0]);
+    }
+    console.log(data);
+    //comparaison_fourier(sample, /*mot_enregistre*/);
     return false;
 }
 
-
-//fctn fourier test 1
-function transforme_fourier1(){//ne fonctionne pas
-    var ft = require('fourier-transform');
-    var db = require('decibels');
- 
-    var frequency = 440;
-    var size = 1024;
-    var sampleRate = 44100;
-    var waveform = new Float32Array(size);
-    for (var i = 0; i < size; i++) {
-        waveform[i] = Math.sin(frequency * Math.PI * 2 * (i / sampleRate));
-    }
- 
-    //get normalized magnitudes for frequencies from 0 to 22050 with interval 44100/1024 ≈ 43Hz
-    var spectrum = ft(waveform);
- 
-    //convert to decibels
-    var decibels = spectrum.map((value) => db.fromGain(value));
-    console.log(decibels);
-    console.log(decibels[0]);
-}
-
-
 //fctn fourier test 2
-function transforme_fourier2(signal){ //fonctionne //rajouter signal en param et retirer signale dedans
+function transforme_fourier2(signal,type){ //fonctionne //rajouter signal en param et retirer signale dedans
     var fft = require('fft-js').fft,
     fftUtil = require('fft-js').util;
     //var signal = [1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3];//par multiple de 2^n (longueur)
@@ -92,11 +84,21 @@ function transforme_fourier2(signal){ //fonctionne //rajouter signal en param et
     var frequencies = fftUtil.fftFreq(phasors, 1024), // Sample rate and coef is just used for length, and frequency step
     magnitudes = fftUtil.fftMag(phasors); 
 
-    var both = frequencies.map(function (f, ix) {
-        return {frequency: f, magnitude: magnitudes[ix]};
-    });
-
+    if(type == 0||type == null){
+        var both = frequencies.map(function (f, ix) {
+            return {frequency: f, magnitude: magnitudes[ix]};
+        });
+    }
+    if(type == 1){
+        var stack = '';
+        var both = frequencies.map(function (f, ix) {
+            stack += f+','+magnitudes[ix]+';';
+        });
+        console.log(stack);
+        return stack;
+    }
     console.log(both);
+    console.log(both[0]);
     console.log(both[0].frequency);
     return both;
     //affichage_fourier(both);
@@ -175,12 +177,13 @@ function getRecords(sql){
 //console.log('bubu = ? ');
 //console.log(recup[0]);
 
-let sample = [1,0,1,0,1,2,5,4,0,3];
-console.log(amplitude_sup(sample));
-//transforme_fourier1();
-//transforme_fourier2();
-//affichage_fourier();
-console.log(comparaison_fourier(0,0));
+let sample = [1,0,1,0,1,2,5,4,0,3,0,0];
+//console.log(amplitude_sup(sample));
+transforme_fourier2([1,1,1,1],1);
+//let tf = transforme_fourier2([1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3]);
+//console.log(comparaison_fourier([1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3],tf));
+reconnaissance_de_mot(sample);
+
 
 
 
@@ -281,3 +284,29 @@ var database =  new sq.Database('./testdb.db3', (err) => {
     }
     console.log('Connected to the in-memory SQlite database.');
 });*/
+
+
+
+//fctn fourier test 1
+/*
+function transforme_fourier1(){//ne fonctionne pas
+    var ft = require('fourier-transform');
+    var db = require('decibels');
+ 
+    var frequency = 440;
+    var size = 1024;
+    var sampleRate = 44100;
+    var waveform = new Float32Array(size);
+    for (var i = 0; i < size; i++) {
+        waveform[i] = Math.sin(frequency * Math.PI * 2 * (i / sampleRate));
+    }
+ 
+    //get normalized magnitudes for frequencies from 0 to 22050 with interval 44100/1024 ≈ 43Hz
+    var spectrum = ft(waveform);
+ 
+    //convert to decibels
+    var decibels = spectrum.map((value) => db.fromGain(value));
+    console.log(decibels);
+    console.log(decibels[0]);
+}
+*/
