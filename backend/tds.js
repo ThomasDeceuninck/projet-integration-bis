@@ -9,43 +9,11 @@ let recup = [];
 let records = [];
 
 
-//connexion db
-var sq = require('sqlite3'); 
-var database =  new sq.Database('./testdb.db3', (err) => {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log('Connected to the in-memory SQlite database.');
-});
+
 
 
 //fctn de changement de valeur de flux en db. la seule a appeler, le reste se fait en cascade
-async function stockage_flux(new_data){
-    //dés qu'une valeur arrive la stock en db (tableua pour ca)
-    //si longueur suffisante appelle separateur_de_flux
-    //set interval (se renseigner)
-    //const words = str.split(' '); 
-    let verif = await getRecords("SELECT sample_flux FROM stockage_flux");
-    let manip_verif = verif[0].sample_flux;
-    let stock = '';
-    let verification2 = [];
-    for(let i=1; i<manip_verif.length-1; i++){
-        if(manip_verif[i]!==','){
-            stock += manip_verif[i];
-        }
-        else{
-            verification2 = verification2.push(parseFloat(stock));
-            stock = '';
-        }
-    }
-    verification2 = verification2.push(new_data)//.concat si tableau
-    if (verification2.length >= 5){//valeur a changer selon longueur tab fixé (tds)
-        separateur_de_flux(verification2);
-    }
-    else{
-        database.run("UPDATE sample_flux SET stockage_flux = ?", [verification2]);
-    }
-}
+
 
 
 function separateur_de_flux(flux){
@@ -54,13 +22,14 @@ function separateur_de_flux(flux){
     amplitude_sup(flux);
     reconnaissance_de_mot(flux);
 
-    let new_flux = flux.splice(flux.length/2);
-    database.run("UPDATE stockage_flux SET stockage_flux = ?", [new_flux]);  
+    //let new_flux = flux.splice(flux.length/2);
+    //database.run("UPDATE stockage_flux SET stockage_flux = ?", [new_flux]);  
 }
 
 
 //fonction de traitemement de signal max
 async function amplitude_sup(sample){
+    
     amplitude_max= await getRecords("SELECT valeur FROM amplitude_max WHERE name =='bubuu'");
     console.log(amplitude_max[0].valeur);
     //let amplitude_max = database.run("SELECT valeur FROM amplitude_max WHERE name =='bubuu'");
@@ -171,6 +140,15 @@ function requete_mot(){
 
 //fctn de requete db
 function getRecords(sql){
+
+    var sq = require('sqlite3'); 
+    var database =  new sq.Database('./testdb.db3', (err) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        console.log('Connected to the in-memory SQlite database.');
+    });
+
     return new Promise(resolve=>{
         database.all(sql,[],(err,rows)=>{
             if(err){
@@ -264,3 +242,42 @@ console.log(comparaison_fourier(0,0));
 
     Plotly.newPlot("myPlot", data, layout);
 }*/
+
+
+
+/*async function stockage_flux(new_data){
+    //dés qu'une valeur arrive la stock en db (tableua pour ca)
+    //si longueur suffisante appelle separateur_de_flux
+    //set interval (se renseigner)
+    //const words = str.split(' '); 
+    let verif = await getRecords("SELECT sample_flux FROM stockage_flux");
+    let manip_verif = verif[0].sample_flux;
+    let stock = '';
+    let verification2 = [];
+    for(let i=1; i<manip_verif.length-1; i++){
+        if(manip_verif[i]!==','){
+            stock += manip_verif[i];
+        }
+        else{
+            verification2 = verification2.push(parseFloat(stock));
+            stock = '';
+        }
+    }
+    verification2 = verification2.push(new_data)//.concat si tableau
+    if (verification2.length >= 5){//valeur a changer selon longueur tab fixé (tds)
+        separateur_de_flux(verification2);
+    }
+    else{
+        database.run("UPDATE sample_flux SET stockage_flux = ?", [verification2]);
+    }
+}*/
+
+
+/*//connexion db
+/*var sq = require('sqlite3'); 
+var database =  new sq.Database('./testdb.db3', (err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log('Connected to the in-memory SQlite database.');
+});*/
