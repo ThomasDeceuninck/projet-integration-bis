@@ -3,11 +3,12 @@
 
 
 //valeurs définies
+/*
 let amplitude_max = [];
 let sql = "SELECT * FROM stockage_flux ;"
 let recup = [];
 let records = [];
-
+*/
 
 
 
@@ -67,6 +68,9 @@ async function reconnaissance_de_mot(sample){
     //comparaison_fourier(sample, /*mot_enregistre*/);
     return false;
 }
+
+
+
 
 //fctn fourier test 2
 function transforme_fourier2(signal,type){ //fonctionne //rajouter signal en param et retirer signale dedans
