@@ -3,12 +3,11 @@
 
 
 //valeurs définies
-/*
 let amplitude_max = [];
 let sql = "SELECT * FROM stockage_flux ;"
 let recup = [];
 let records = [];
-*/
+
 
 
 
@@ -52,8 +51,10 @@ async function reconnaissance_de_mot(sample){
     let data = await getRecords("SELECT sample_enregistre FROM mot_enregistre;");
     //string_to_tab(data);
     //let tab_data = [];
-    for(let i=0; i<data.length; i++){
-        let stack = data[i].sample_enregistre.split(';');
+    //console.log(data);
+    for(let i=1; i<data.length; i++){
+        let stack = data[i].sample_enregistre;
+        stack = stack.split(';');
         stack.pop();
         let tab_mot = stack.map(function (val) {
             let stack2 = val.split(',');
@@ -115,7 +116,7 @@ function comparaison_fourier (sample1, sample2){
     for (var i = 0; i < 1024; i++) {
         signal[i] = Math.sin(440 * Math.PI * 2 * (i / 44100));
     }*/
-    let tf1 = transforme_fourier2(sample1);//transforme_fourier2(signal);
+    let tf1 = transforme_fourier2(sample1, 0);//transforme_fourier2(signal);
     let tf2 = sample2;//transforme_fourier2(signal);
     let stock = 0;
     for (let i=0; i<tf1.length; i++){
@@ -183,10 +184,11 @@ function getRecords(sql){
 
 let sample = [1,0,1,0,1,2,5,4,0,3,0,0];
 //console.log(amplitude_sup(sample));
-transforme_fourier2([1,1,1,1],1);
+//transforme_fourier2([1,1,1,1],1);
 //let tf = transforme_fourier2([1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3]);
 //console.log(comparaison_fourier([1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3],tf));
-reconnaissance_de_mot(sample);
+//reconnaissance_de_mot(sample);
+separateur_de_flux([1,1,1,1]);
 
 
 
