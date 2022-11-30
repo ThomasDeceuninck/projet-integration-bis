@@ -122,7 +122,7 @@ class BluetoothOn extends Component {
               }
           }
 
-          console.log("écriture vers bracelet");
+          //console.log("écriture vers bracelet");
           //this.writeToDevice("coucou\n");
 
           if(this.state.soundData.length >= 512){
