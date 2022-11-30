@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-
+import separateur_de_flux from '././backend/tds.js';
 import React, {Component} from 'react';
 import RNBluetoothClassic, {
   BluetoothDevice
@@ -121,6 +121,7 @@ class BluetoothOn extends Component {
 
           if(this.state.soundData.length >= 512){
             // appel de la fonction thomas avec this.state.soundData[:512]
+            separateur_de_flux();
           }
 
           //console.log("verif action"); // à enlever
