@@ -67,7 +67,7 @@ class BluetoothOn extends Component {
       else{
           // Si on arrive pas à se déconnecter avec .disconnect() de la librairie (car le bracelet est éteint, le bluetooth a été désactivé, etc.)
           clearInterval(this.readInterval);
-          this.setState({connected : false});
+          this.setState({connectedDevice : null});
           console.log("[Phone]Disconnected ungracefully");
       }
     } catch{
@@ -83,10 +83,11 @@ class BluetoothOn extends Component {
      * Déconnecte un device bluetooth encore connecté.
      */
     try {
-      let disconnected = await this.state.disconnect();
-      console.log("[Phone]Disconnected gracefully");
-      this.setState({connected : !disconnected});
+      await this.state.disconnect();
+      console.log("[Phone] Disconnected gracefully");
+      this.setState({connectedDevice : null});
     } catch(error) {
+      console.log("[Phone] Impossible to disconnect")
       console.log(error);
     }
   } 
