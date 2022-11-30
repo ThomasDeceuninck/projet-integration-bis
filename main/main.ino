@@ -17,11 +17,9 @@ void setup()
 {
 Serial.begin(9600); // intitialise la connexion série à travers l'alimentation
 
-//Serial.begin(38400); 
-//Serial.begin(74880); 
 
 hc05.begin(9600); // intitialise la connexion série à travers le hc05
-//hc05.begin(38400);
+hc05.setTimeout(100); // set new value to 100 milliseconds
 
 pinMode(A3,INPUT);
 pinMode(ledTest,OUTPUT);
@@ -66,13 +64,11 @@ void loop() {
 // Marche pas. Rien ne se passe quand on envoie une valeur depuis le terminal bluetooth sur smartphone. Ne détecte pas de donnée disponible
   if(hc05.available()){
     digitalWrite(ledReceive, HIGH);
-    Temps_start_us=micros();
-    receivedData = hc05.readString();
-    Temps_stop_us=micros();
-    receivedData.trim(); // Enlève \r, \n ou des espaces à la fin du string si il y en a
 
-    Duree_us=Temps_stop_us-Temps_start_us;
-    Serial.println(Duree_us);
+    receivedData = hc05.readStringUntil("\n");
+
+    receivedData.trim(); // Enlève \r, \n ou des espaces à la fin du string si il y en a. Normalement pas besoin car readStringUntil ne stocke pas le délimiteur
+
     Serial.println(receivedData);
 
     if(receivedData == "coucou"){
