@@ -68,7 +68,7 @@ class BluetoothOn extends Component {
           // Si on arrive pas à se déconnecter avec .disconnect() de la librairie (car le bracelet est éteint, le bluetooth a été désactivé, etc.)
           clearInterval(this.readInterval);
           this.setState({connectedDevice : null});
-          console.log("[Phone]Disconnected ungracefully");
+          console.log("[Phone] Disconnected ungracefully");
       }
     } catch{
       console.log(error);
@@ -134,6 +134,24 @@ class BluetoothOn extends Component {
     } catch (err) {
       console.log(err);
     }
+  }
+
+
+  async writeToDevice (text){
+    try{
+      try{
+        text = str(text);
+      } catch{
+        throw new Error(`La valeur à envoyer ne peut pas être transformée en string.`);
+      }
+
+      await this.state.connectedDevice.write(text);
+
+    } catch{
+      console.log(err);
+
+    }
+
   }
 
   afficheSoundData(){
