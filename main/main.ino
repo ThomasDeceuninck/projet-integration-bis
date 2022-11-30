@@ -6,8 +6,11 @@
 SoftwareSerial hc05(rxPin, txPin);
 
 #define ledTest 5
+#define ledReceive 4
 
+String receivedData;
 
+unsigned long Temps_start_us,Temps_stop_us, Duree_us;
 
 
 void setup()
@@ -22,8 +25,12 @@ hc05.begin(9600); // intitialise la connexion série à travers le hc05
 
 pinMode(A3,INPUT);
 pinMode(ledTest,OUTPUT);
+pinMode(ledReceive,OUTPUT);
 
 digitalWrite(ledTest, LOW);
+digitalWrite(ledReceive, LOW);
+
+
 
 
 }
@@ -41,9 +48,9 @@ void loop() {
   
   int readValue = analogRead(A3);
 
-  Serial.println(readValue);
+  //Serial.println(readValue);
   hc05.println(readValue);
-  //delay(5);
+
 
   if(readValue>310){
     Serial.println("Au dessus\n");
@@ -58,11 +65,21 @@ void loop() {
   
 // Marche pas. Rien ne se passe quand on envoie une valeur depuis le terminal bluetooth sur smartphone. Ne détecte pas de donnée disponible
   if(hc05.available()){
-    int givenNumber = hc05.read();
-    if(givenNumber > 100){
-      hc05.write(givenNumber);
+    digitalWrite(ledReceive, HIGH);
+    Temps_start_us=micros();
+    receivedData = hc05.readString();
+    Temps_stop_us=micros();
+    receivedData.trim(); // Enlève \r, \n ou des espaces à la fin du string si il y en a
+
+    Duree_us=Temps_stop_us-Temps_start_us;
+    Serial.println(Duree_us);
+    Serial.println(receivedData);
+
+    if(receivedData == "coucou"){
+      digitalWrite(ledReceive, HIGH);
     }
     
+    digitalWrite(ledReceive, LOW);
   }
   
 

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 
 import React, {Component} from 'react';
 import RNBluetoothClassic, {
@@ -28,6 +28,8 @@ class BluetoothOn extends Component {
     this.changeUpperStateConnectedDevice = this.changeUpperStateConnectedDevice.bind(this);
     this.initializeRead = this.initializeRead.bind(this);
     this.afficheSoundData = this.afficheSoundData.bind(this);
+    //this.writeToDevice = this.writeToDevice.bind(this);
+    this.sendData = this.sendData.bind(this);
   }
 
   async changeUpperStateSelectedDevice(value){
@@ -120,11 +122,14 @@ class BluetoothOn extends Component {
               }
           }
 
+          console.log("écriture vers bracelet");
+          //this.writeToDevice("coucou\n");
+
           if(this.state.soundData.length >= 512){
             // appel de la fonction thomas avec this.state.soundData[:512]
           }
 
-          //console.log("verif action"); // à enlever
+          
           if(this.state.actionRequired !== null){
             console.log("action demandée");
             // FONCTION DE GESTION D'ACTION
@@ -137,17 +142,18 @@ class BluetoothOn extends Component {
   }
 
 
-  async writeToDevice (text){
+  async writeToDevice(text){
     try{
       try{
-        text = str(text);
-      } catch{
+        text = String(text);
+      } catch(err){
+        console.log(err);
         throw new Error(`La valeur à envoyer ne peut pas être transformée en string.`);
       }
 
       await this.state.connectedDevice.write(text);
 
-    } catch{
+    } catch(err){
       console.log(err);
 
     }
@@ -158,18 +164,30 @@ class BluetoothOn extends Component {
     alert(this.state.soundData.length);
   }
 
+  sendData(){
+    this.writeToDevice("coucou\n");
+  }
+
 
 
   render() {
     return (
-      <BlocBoutons 
-      changeUpperStateSelectedDevice={this.changeUpperStateSelectedDevice} 
-      changeUpperStateConnectedDevice={this.changeUpperStateConnectedDevice} 
-      initializeRead={this.initializeRead}
-      afficheSoundData={this.afficheSoundData}
-      selectedDevice={this.state.selectedDevice} 
-      connectedDevice={this.state.connectedDevice}
-      />
+      <View>
+        <BlocBoutons 
+          changeUpperStateSelectedDevice={this.changeUpperStateSelectedDevice} 
+          changeUpperStateConnectedDevice={this.changeUpperStateConnectedDevice} 
+          initializeRead={this.initializeRead}
+          afficheSoundData={this.afficheSoundData}
+          selectedDevice={this.state.selectedDevice} 
+          connectedDevice={this.state.connectedDevice}
+        />
+        <Button 
+          onPress={this.sendData}
+          title="send data"
+          color="#f00"
+        />
+      </View>
+      
     );
   }
 }
