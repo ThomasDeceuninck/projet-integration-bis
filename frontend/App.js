@@ -151,7 +151,20 @@ class BluetoothOn extends Component {
         throw new Error(`La valeur à envoyer ne peut pas être transformée en string.`);
       }
 
-      await this.state.connectedDevice.write(text);
+
+      
+      await RNBluetoothClassic.writeToDevice(
+        this.state.connectedDevice.address,
+        text,
+        "utf-8"
+      );
+      
+      
+      //let text = Buffer.alloc(10, "a");  
+      
+      //await this.state.connectedDevice.write(text);
+
+
 
     } catch(err){
       console.log(err);
@@ -165,6 +178,7 @@ class BluetoothOn extends Component {
   }
 
   sendData(){
+    //this.writeToDevice("coucou\n");
     this.writeToDevice("coucou\n");
   }
 

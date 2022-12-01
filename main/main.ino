@@ -8,9 +8,6 @@ SoftwareSerial hc05(rxPin, txPin);
 #define ledTest 5
 #define ledReceive 4
 
-String receivedData;
-
-unsigned long Temps_start_us,Temps_stop_us, Duree_us;
 
 
 void setup()
@@ -47,7 +44,8 @@ void loop() {
   int readValue = analogRead(A3);
 
   //Serial.println(readValue);
-  hc05.println(readValue);
+  
+  hc05.println(readValue);  
 
 
   if(readValue>310){
@@ -61,15 +59,19 @@ void loop() {
   }
 
   
-// Marche pas. Rien ne se passe quand on envoie une valeur depuis le terminal bluetooth sur smartphone. Ne détecte pas de donnée disponible
+
   if(hc05.available()){
     digitalWrite(ledReceive, HIGH);
 
-    receivedData = hc05.readStringUntil("\n");
+    String receivedData = hc05.readStringUntil("\n");
+    //String receivedData = Serial.readStringUntil("\n");
+
 
     receivedData.trim(); // Enlève \r, \n ou des espaces à la fin du string si il y en a. Normalement pas besoin car readStringUntil ne stocke pas le délimiteur
 
+
     Serial.println(receivedData);
+
 
     if(receivedData == "coucou"){
       digitalWrite(ledReceive, HIGH);
@@ -77,6 +79,8 @@ void loop() {
     
     digitalWrite(ledReceive, LOW);
   }
+
+
   
 
 /* communication serial : (à vérfieir, pas très prcis comme explication)
