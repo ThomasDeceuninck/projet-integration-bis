@@ -15,7 +15,7 @@ void setup()
 {
 Serial.begin(9600); // intitialise la connexion série à travers l'alimentation
 
-Serial.setTimeout(100);
+Serial.setTimeout(10); // défini le temps de fonctionnement des fonctions sur Serial, de base : 1000 ms = 1 sec (la lecture durait une seconde sans ça)
 
 
 
