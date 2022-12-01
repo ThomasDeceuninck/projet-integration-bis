@@ -1,4 +1,5 @@
 
+
 #include <SoftwareSerial.h>
 
 #define rxPin 11 // Broche 11 en tant que RX, à raccorder sur TX du HC-05
@@ -32,14 +33,7 @@ digitalWrite(ledReceive, LOW);
 
 
 void loop() {
-  /*
-  Serial.print(0);
-  Serial.print(" ");
-  Serial.print(1000);
-  Serial.print(" ");
-  */
 
-  // Mis en commentaire suite au test 
   
   int readValue = analogRead(A3);
 
@@ -58,10 +52,37 @@ void loop() {
 
   }
 
+/* En dehors du if ça marche
+   String incomingString = hc05.readStringUntil('\n');
+
+
+    // prints the received data
+    Serial.print("I received: ");
+    Serial.println(incomingString);
+    delay(100);
   
+ */
+
+/*
+// dans le if on a des problèmes de lecture. On obtiens pas la donnée correcte
+  if (hc05.available() > 0) {
+    //String incomingString = Serial.readStringUntil('\n');
+    String incomingString = hc05.readStringUntil('\n');
+
+
+    // prints the received data
+    Serial.print("I received: ");
+    Serial.println(incomingString);
+    delay(100);
+  } 
+
+*/
+
 
   if(hc05.available()){
     digitalWrite(ledReceive, HIGH);
+
+    
 
     String receivedData = hc05.readStringUntil("\n");
     //String receivedData = Serial.readStringUntil("\n");
@@ -83,14 +104,7 @@ void loop() {
 
   
 
-/* communication serial : (à vérfieir, pas très prcis comme explication)
-- print() : transmet la données sous forme d'une chaine de caractères. Chaque caractère est écrit avec un bit. 
-            // On peut aussi préciser le type (binaire, decimal, hexadécimal, ...)
-- println() : idem mais avec un "/n" en plus
-- write() : transmet les données sous forme de bits 
-            Ex : si on envoie une variable avec un int dedans il le transformera en caractère selon le code ASCII 128 caractères
-  ATTENTION à l'aire de changer en fonction du Baud rate
-*/
+
 
 
   
