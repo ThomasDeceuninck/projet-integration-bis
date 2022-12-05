@@ -2,13 +2,7 @@
 
 
 
-//valeurs définies
-let amplitude_max = [];
-let sql = "SELECT * FROM stockage_flux ;"
-let recup = [];
-let records = [];
-
-
+//valeurs définie
 
 
 
@@ -24,6 +18,26 @@ function separateur_de_flux(flux){
 
     //let new_flux = flux.splice(flux.length/2);
     //database.run("UPDATE stockage_flux SET stockage_flux = ?", [new_flux]);  
+}
+
+
+function purificateur_signal(sample){
+    let new_tab = [];
+    let stack = sample[0]+sample[1]+sample[2];
+    new_tab.push(stack/3);
+    stack += sample[3];
+    new_tab.push(stack/4);
+    let j;
+    for (let i=2; i<sample.length-2; i++){
+        stack = sample[i-2]+sample[i-1]+sample[i]+sample[i+1]+sample[i+2];
+        new_tab.push(stack/5);
+        j = i;
+    }
+    stack = sample[j-1]+sample[j]+sample[j+1]+sample[j+2];
+    new_tab.push(stack/4);
+    stack = sample[j]+sample[j+1]+sample[j+2];
+    new_tab.push(stack/3);
+    return new_tab;
 }
 
 
@@ -86,7 +100,7 @@ function transforme_fourier2(signal,type){ //fonctionne //rajouter signal en par
     var phasors = fft(signal);
 
     //console.log(phasors[3]);
-    var frequencies = fftUtil.fftFreq(phasors, 1024), // Sample rate and coef is just used for length, and frequency step
+    var frequencies = fftUtil.fftFreq(phasors, 512), // Sample rate and coef is just used for length, and frequency step
     magnitudes = fftUtil.fftMag(phasors); 
 
     if(type == 0||type == null){
@@ -121,7 +135,7 @@ function comparaison_fourier (sample1, sample2){
     let stock = 0;
     for (let i=0; i<tf1.length; i++){
         for (let j=0; j<tf2.length;j++){
-            if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>tf2[j].magnitude-1.0 && tf1[i].magnitude<tf2[j].magnitude+1.0){
+            if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>tf2[j].magnitude*0.5-3.0 && tf1[i].magnitude<tf2[j].magnitude*6.5+5.0){
                 console.log(stock);
                 stock+=1;
                 break
@@ -148,6 +162,9 @@ function requete_mot(){
 //fctn de requete db
 function getRecords(sql){
 
+    let recup = [];
+
+
     var sq = require('sqlite3'); 
     var database =  new sq.Database('./testdb.db3', (err) => {
         if (err) {
@@ -172,7 +189,12 @@ function getRecords(sql){
 }
 
 
-
+var signal = new Float32Array(512);
+for (var i = 0; i < 512; i++) {
+    signal[i] = Math.sin(470 * Math.PI * 2 * (i / 44100));
+}
+var tfff = transforme_fourier2(signal, 1);
+//console.log(tfff);
 
 
 //asyncCall("SELECT sample_flux FROM stockage_flux");
@@ -182,13 +204,15 @@ function getRecords(sql){
 //console.log('bubu = ? ');
 //console.log(recup[0]);
 
-let sample = [1,0,1,0,1,2,5,4,0,3,0,0];
+let sample = [1,2,3,3,2,1,0,10,0,1,2,3];
 //console.log(amplitude_sup(sample));
 //transforme_fourier2([1,1,1,1],1);
 //let tf = transforme_fourier2([1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3]);
 //console.log(comparaison_fourier([1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3],tf));
 //reconnaissance_de_mot(sample);
-separateur_de_flux([1,1,1,1]);
+
+//separateur_de_flux(signal);
+console.log(purificateur_signal(sample));
 
 
 
