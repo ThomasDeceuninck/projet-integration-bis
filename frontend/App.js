@@ -175,6 +175,7 @@ class BluetoothOn extends Component {
 
   afficheSoundData(){
     alert(this.state.soundData.length);
+    console.log(this.state.soundData(length(this.state.soundData)));
   }
 
   sendData(){

@@ -37,7 +37,7 @@ void loop() {
   
   int readValue = analogRead(A3);
 
-  //Serial.println(readValue);  //remettre
+  Serial.println(readValue);  //remettre
   
 
 
@@ -52,9 +52,15 @@ void loop() {
 
 
   if(Serial.available() > 0){
-    digitalWrite(ledReceive, HIGH);
+    
     String receivedData = Serial.readStringUntil("\n");
-    Serial.println(receivedData);
+    receivedData.trim();
+
+    if(receivedData == "coucou"){
+      digitalWrite(ledReceive, HIGH);
+    }
+    
+    //Serial.println(receivedData);
     digitalWrite(ledReceive, LOW);
   }
   
