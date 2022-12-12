@@ -218,7 +218,7 @@ let sample = [1,2,3,3,2,1,0,10,0,1,2,3];
 
 
 
-//export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot, transforme_fourier2, comparaison_fourier, requete_max, requete_mot, getRecords};
+export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot,/* transforme_fourier2,*/ comparaison_fourier, requete_max, requete_mot/*, getRecords*/};
 
 
 
