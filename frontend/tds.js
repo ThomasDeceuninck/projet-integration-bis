@@ -166,7 +166,8 @@ function getRecords(sql){
     let recup = [];
 
 
-    var sq = require('sqlite3'); 
+    //var sq = require('sqlite3'); 
+    var sq = require('react-native-sqlite-storage'); 
     var database =  new sq.Database('./testdb.db3', (err) => {
         if (err) {
           return console.error(err.message);
@@ -341,3 +342,5 @@ function transforme_fourier1(){//ne fonctionne pas
     console.log(decibels[0]);
 }
 */
+
+export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot, transforme_fourier2, comparaison_fourier, requete_max, requete_mot, getRecords}  ;
