@@ -21,7 +21,8 @@ function getRecords(sql){
     let recup = [];
 
 
-    var sq = require('sqlite3'); 
+    //var sq = require('sqlite3'); 
+    var sq = require('react-native-sqlite-storage'); 
     var database =  new sq.Database('./testdb.db3', (err) => {
         if (err) {
           return console.error(err.message);
