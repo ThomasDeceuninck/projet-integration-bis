@@ -35,18 +35,18 @@ const purificateur_signal = (sample) => {
 
 const amplitude_sup = (props) => {
     let amplitude_max;
-    useEffect(() => {
+    /*useEffect(() => {
         // Create an scoped async function in the hook
         async function anyNameFunction() {
             amplitude_max= await getRecords("SELECT valeur FROM amplitude_max WHERE name =='bubuu'");
         }    // Execute the created function directly
         anyNameFunction();
-    }, []);
-    console.log(amplitude_max[0].valeur);
+    }, []);*/
+    //console.log(amplitude_max[0].valeur);
     let sample_pur = purificateur_signal(props.sample);
     for (let i=0; i<sample_pur.length;i++){
         console.log("ok");
-        if (sample_pur[i]>=amplitude_max[0].valeur){
+        if (sample_pur[i]>=4/*amplitude_max[0].valeur*/){
             requete_max();
             return true;
         };
@@ -138,7 +138,7 @@ function comparaison_fourier (sample1, sample2){
 }
 
 
-function requete_max(){
+const requete_max = () => {
     console.log("envoie requete max");
 }
 
