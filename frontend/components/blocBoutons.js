@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { View, Button } from 'react-native';
+import { separateur_de_flux, amplitude_sup } from '../tds';
 
 import BoutonScanBluetooth from './BoutonScanBluetooth';
 import BoutonConnectDevice from './BoutonConnectDevice';
@@ -53,6 +54,11 @@ class BlocBoutons extends Component{
                 <Button 
                 onPress={this.props.afficheSoundData}
                 title="Afficher state"
+                color="#f00"
+                />
+                <Button 
+                onPress={amplitude_sup([1,1,1,5])}
+                title="test tds"
                 color="#f00"
                 />
 
