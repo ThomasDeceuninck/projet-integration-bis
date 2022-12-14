@@ -2,6 +2,7 @@
 //import {  } from 'fft-js';
 import react from 'react';
 import {useEffect} from 'react-native';
+import { viewMot, viewAmp } from './DBCreation';
 
 
 
@@ -38,7 +39,7 @@ const amplitude_sup = (sample) => {
     /*useEffect(() => {
         // Create an scoped async function in the hook
         async function anyNameFunction() {
-            amplitude_max= await getRecords("SELECT valeur FROM amplitude_max WHERE name =='bubuu'");
+            amplitude_max= await viewAmp();
         }    // Execute the created function directly
         anyNameFunction();
     }, []);*/
@@ -46,19 +47,19 @@ const amplitude_sup = (sample) => {
     let sample_pur = purificateur_signal(sample);
     for (let i=0; i<sample_pur.length;i++){
         console.log("ok");
-        if (sample_pur[i]>=4/*amplitude_max[0].valeur*/){
+        if (sample_pur[i]>=600/*amplitude_max[0].valeur*/){
             requete_max();
-            return <div></div>;
+            return 'max';
         };
     };
-    return false; 
+    return null; 
 };
 
 
 
 //fonction de traitement de signal rec mot
-async function reconnaissance_de_mot(sample){
-    let data = await getRecords("SELECT sample_enregistre FROM mot_enregistre;");
+ const reconnaissance_de_mot = (sample) => {
+    let data = getRecords("SELECT sample_enregistre FROM mot_enregistre;");
     for(let i=1; i<data.length; i++){
         let stack = data[i].sample_enregistre;
         stack = stack.split(';');
@@ -132,18 +133,20 @@ const comparaison_fourier = (sample1, sample2) => {
     }
     if (stock == tf1.length){
         requete_mot();
-        return true;
+        return 'mot';
     }
-    return false;
+    return null;
 }
 
 
 const requete_max = () => {
     console.log("envoie requete max");
+    return 'max';
 }
 
 const requete_mot = () => {
     console.log("envoie requete mot");
+    return 'mot';
 }
 
 
