@@ -5,7 +5,7 @@ import {useEffect} from 'react-native';
 
 
 
-function separateur_de_flux(flux){
+const separateur_de_flux = (flux) => {
     //prend le stockage flux, en cree un tableau et appelle amplitude_sup et reconnaissance_de_mot
     //supprime la moitié de départ de stockage flux
     amplitude_sup(flux);
@@ -33,7 +33,7 @@ const purificateur_signal = (sample) => {
 }
 
 
-const amplitude_sup = (props) => {
+const amplitude_sup = (sample) => {
     let amplitude_max;
     /*useEffect(() => {
         // Create an scoped async function in the hook
@@ -43,12 +43,12 @@ const amplitude_sup = (props) => {
         anyNameFunction();
     }, []);*/
     //console.log(amplitude_max[0].valeur);
-    let sample_pur = purificateur_signal(props.sample);
+    let sample_pur = purificateur_signal(sample);
     for (let i=0; i<sample_pur.length;i++){
         console.log("ok");
         if (sample_pur[i]>=4/*amplitude_max[0].valeur*/){
             requete_max();
-            return true;
+            return <div></div>;
         };
     };
     return false; 
@@ -78,10 +78,10 @@ async function reconnaissance_de_mot(sample){
 
 
 
-/*
+
 
 //fctn fourier test 2
-function transforme_fourier2(signal,type){ //fonctionne //rajouter signal en param et retirer signale dedans
+const transforme_fourier2 = (signal,type) => { //fonctionne //rajouter signal en param et retirer signale dedans
     var ffft = require('fft-js').fft,
     fftUtil = require('fft-js').util;
     var phasors = ffft(signal);
@@ -108,12 +108,12 @@ function transforme_fourier2(signal,type){ //fonctionne //rajouter signal en par
     //affichage_fourier(both);
 }
 
-*/
+
 
 
 
 //comparaison de fourier
-function comparaison_fourier (sample1, sample2){
+const comparaison_fourier = (sample1, sample2) => {
     /*var signal = new Float32Array(1024);
     for (var i = 0; i < 1024; i++) {
         signal[i] = Math.sin(440 * Math.PI * 2 * (i / 44100));
@@ -142,15 +142,15 @@ const requete_max = () => {
     console.log("envoie requete max");
 }
 
-function requete_mot(){
+const requete_mot = () => {
     console.log("envoie requete mot");
 }
 
 
-/*
+
 
 //fctn de requete db
-function getRecords(sql){
+const getRecords = (sql) => {
 
     let recup = [];
 
@@ -180,7 +180,7 @@ function getRecords(sql){
 }
 
  
-*/
+
 
 
 
@@ -218,7 +218,7 @@ let sample = [1,2,3,3,2,1,0,10,0,1,2,3];
 
 
 
-export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot,/* transforme_fourier2,*/ comparaison_fourier, requete_max, requete_mot/*, getRecords*/};
+export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot,transforme_fourier2, comparaison_fourier, requete_max, requete_mot, getRecords};
 
 
 
