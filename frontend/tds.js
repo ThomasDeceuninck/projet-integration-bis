@@ -1,28 +1,20 @@
-//import Plotly from 'plotly.js-dist'
+//import {openDatabase} as sq from 'react-native-sqlite-storage';
+//import {  } from 'fft-js';
+import react from 'react';
+import {useEffect} from 'react-native';
+import { viewMot, viewAmp } from './DBCreation';
 
 
 
-//valeurs définie
-
-
-
-
-//fctn de changement de valeur de flux en db. la seule a appeler, le reste se fait en cascade
-
-
-
-function separateur_de_flux(flux){
+const separateur_de_flux = (flux) => {
     //prend le stockage flux, en cree un tableau et appelle amplitude_sup et reconnaissance_de_mot
     //supprime la moitié de départ de stockage flux
     amplitude_sup(flux);
     reconnaissance_de_mot(flux);
-
-    //let new_flux = flux.splice(flux.length/2);
-    //database.run("UPDATE stockage_flux SET stockage_flux = ?", [new_flux]);  
 }
 
 
-function purificateur_signal(sample){
+const purificateur_signal = (sample) => {
     let new_tab = [];
     let stack = sample[0]+sample[1]+sample[2];
     new_tab.push(stack/3);
@@ -42,31 +34,32 @@ function purificateur_signal(sample){
 }
 
 
-//fonction de traitemement de signal max
-async function amplitude_sup(sample){
-    
-    amplitude_max= await getRecords("SELECT valeur FROM amplitude_max WHERE name =='bubuu'");
-    console.log(amplitude_max[0].valeur);
-    //let amplitude_max = database.run("SELECT valeur FROM amplitude_max WHERE name =='bubuu'");
-    //console.log(amplitude_max);
-    for (let i=0; i<sample.length;i++){
+const amplitude_sup = (sample) => {
+    let amplitude_max;
+    /*useEffect(() => {
+        // Create an scoped async function in the hook
+        async function anyNameFunction() {
+            amplitude_max= await viewAmp();
+        }    // Execute the created function directly
+        anyNameFunction();
+    }, []);*/
+    //console.log(amplitude_max[0].valeur);
+    let sample_pur = purificateur_signal(sample);
+    for (let i=0; i<sample_pur.length;i++){
         console.log("ok");
-        if (sample[i]>=amplitude_max[0].valeur){
+        if (sample_pur[i]>=600/*amplitude_max[0].valeur*/){
             requete_max();
-            return true;
+            return 'max';
         };
     };
-    return false;   
-}
+    return null; 
+};
+
 
 
 //fonction de traitement de signal rec mot
-async function reconnaissance_de_mot(sample){
-    //faire une requete db avec les mot enregistre + boucle
-    let data = await getRecords("SELECT sample_enregistre FROM mot_enregistre;");
-    //string_to_tab(data);
-    //let tab_data = [];
-    //console.log(data);
+ const reconnaissance_de_mot = (sample) => {
+    let data = getRecords("SELECT sample_enregistre FROM mot_enregistre;");
     for(let i=1; i<data.length; i++){
         let stack = data[i].sample_enregistre;
         stack = stack.split(';');
@@ -81,26 +74,18 @@ async function reconnaissance_de_mot(sample){
         console.log(tab_mot[0]);
     }
     console.log(data);
-    //comparaison_fourier(sample, /*mot_enregistre*/);
     return false;
 }
 
 
 
 
+
 //fctn fourier test 2
-function transforme_fourier2(signal,type){ //fonctionne //rajouter signal en param et retirer signale dedans
-    var fft = require('fft-js').fft,
+const transforme_fourier2 = (signal,type) => { //fonctionne //rajouter signal en param et retirer signale dedans
+    var ffft = require('fft-js').fft,
     fftUtil = require('fft-js').util;
-    //var signal = [1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3];//par multiple de 2^n (longueur)
-    /*var signal = new Float32Array(1024);
-    for (var i = 0; i < 1024; i++) {
-        signal[i] = Math.sin(440 * Math.PI * 2 * (i / 44100));
-    }*/
-
-    var phasors = fft(signal);
-
-    //console.log(phasors[3]);
+    var phasors = ffft(signal);
     var frequencies = fftUtil.fftFreq(phasors, 512), // Sample rate and coef is just used for length, and frequency step
     magnitudes = fftUtil.fftMag(phasors); 
 
@@ -125,8 +110,11 @@ function transforme_fourier2(signal,type){ //fonctionne //rajouter signal en par
 }
 
 
+
+
+
 //comparaison de fourier
-function comparaison_fourier (sample1, sample2){
+const comparaison_fourier = (sample1, sample2) => {
     /*var signal = new Float32Array(1024);
     for (var i = 0; i < 1024; i++) {
         signal[i] = Math.sin(440 * Math.PI * 2 * (i / 44100));
@@ -145,29 +133,33 @@ function comparaison_fourier (sample1, sample2){
     }
     if (stock == tf1.length){
         requete_mot();
-        return true;
+        return 'mot';
     }
-    return false;
+    return null;
 }
 
 
-function requete_max(){
+const requete_max = () => {
     console.log("envoie requete max");
+    return 'max';
 }
 
-function requete_mot(){
+const requete_mot = () => {
     console.log("envoie requete mot");
+    return 'mot';
 }
+
+
 
 
 //fctn de requete db
-function getRecords(sql){
+const getRecords = (sql) => {
 
     let recup = [];
 
 
     //var sq = require('sqlite3'); 
-    var sq = require('react-native-sqlite-storage'); 
+    var sq = require('react-native-sqlite-storage'); // a l exterieur (nico) pb compilation
     var database =  new sq.Database('./testdb.db3', (err) => {
         if (err) {
           return console.error(err.message);
@@ -190,12 +182,18 @@ function getRecords(sql){
     });
 }
 
+ 
+
+
+
 
 var signal = new Float32Array(512);
 for (var i = 0; i < 512; i++) {
     signal[i] = Math.sin(470 * Math.PI * 2 * (i / 44100));
 }
-var tfff = transforme_fourier2(signal, 1);
+//var tfff = transforme_fourier2(signal, 1);
+
+
 //console.log(tfff);
 
 
@@ -214,14 +212,16 @@ let sample = [1,2,3,3,2,1,0,10,0,1,2,3];
 //reconnaissance_de_mot(sample);
 
 //separateur_de_flux(signal);
-console.log(purificateur_signal(sample));
+
+
+//console.log(purificateur_signal(sample));
 
 
 
 
 
 
-
+export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot,transforme_fourier2, comparaison_fourier, requete_max, requete_mot, getRecords};
 
 
 
@@ -343,4 +343,3 @@ function transforme_fourier1(){//ne fonctionne pas
 }
 */
 
-export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot, transforme_fourier2, comparaison_fourier, requete_max, requete_mot, getRecords}  ;
