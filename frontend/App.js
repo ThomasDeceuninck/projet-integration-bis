@@ -5,6 +5,10 @@ import  * as tds from './tds.js';
 //import  * as tds from '../backend/tds.js';
 
 
+import  * as tds from './tds.js';
+//import  * as tds from '../backend/tds.js';
+
+
 import React, {Component} from 'react';
 import RNBluetoothClassic, {
   BluetoothDevice
@@ -125,11 +129,13 @@ class BluetoothOn extends Component {
 
           if(this.state.soundData.length >= 512){
             // appel de la fonction thomas avec this.state.soundData[:512]
-            separateur_de_flux(this.state.soundData);
+            this.state.actionRequired = tds.amplitude_sup(this.state.soundData);
           }
 
           //console.log("verif action"); // à enlever
           if(this.state.actionRequired !== null){
+            
+            this.state.actionRequired = null;
             console.log("action demandée");
             // FONCTION DE GESTION D'ACTION
           }
