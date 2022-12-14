@@ -44,16 +44,35 @@ const amplitude_sup = (sample) => {
         anyNameFunction();
     }, []);*/
     //console.log(amplitude_max[0].valeur);
-    let sample_pur = purificateur_signal(sample);
+
+    //let sample_pur = purificateur_signal(sample);
+    let sample_pur = sample;
+
+    console.log(sample_pur[0]);
+    let max_value = Math.max(...sample_pur);
+    console.log(max_value);
+    max_value = 0;
+
+    if(Math.max(...sample_pur) >= 350){
+        //console.log("max")
+        return 'max';
+    }
+    
+/*
     for (let i=0; i<sample_pur.length;i++){
-        console.log("ok");
-        //if (sample_pur[i]>=600/*amplitude_max[0].valeur*/){
-        if (sample_pur[i]>=310/*amplitude_max[0].valeur*/){
-            requete_max();
+        //console.log(typeof(sample_pur[i]));
+        //console.log("ok");
+        //if (sample_pur[i]>=600){
+        if (sample_pur[i]>=3){   //amplitude_max[0].valeur // au lieu de 310
+            //requete_max();
+            console.log("max")
             return 'max';
         };
     };
+
+    */
     return null; 
+    //return "erreur"; 
 };
 
 
