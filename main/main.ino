@@ -6,7 +6,7 @@
  // Broche 10 en tant que TX, à raccorder sur RX du HC-05 
 
 
-#define ledTest 5
+#define ledTest 7
 #define ledReceive 4
 
 
@@ -56,8 +56,9 @@ void loop() {
     String receivedData = Serial.readStringUntil("\n");
     receivedData.trim();
 
-    if(receivedData == "coucou"){
+    if(receivedData == "max"){
       digitalWrite(ledReceive, HIGH);
+      delay(5); // à enlever
     }
     
     //Serial.println(receivedData);

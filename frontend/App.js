@@ -5,9 +5,6 @@ import  * as tds from './tds.js';
 //import  * as tds from '../backend/tds.js';
 
 
-import  * as tds from './tds.js';
-//import  * as tds from '../backend/tds.js';
-
 
 import React, {Component} from 'react';
 import RNBluetoothClassic, {
@@ -186,12 +183,12 @@ class BluetoothOn extends Component {
 
   afficheSoundData(){
     alert(this.state.soundData.length);
-    console.log(this.state.soundData(length(this.state.soundData)));
+    //console.log(this.state.soundData(length(this.state.soundData)));
   }
 
   sendData(){
     //this.writeToDevice("coucou\n");
-    this.writeToDevice("coucou\n");
+    this.writeToDevice("max\n");
   }
 
 

@@ -137,6 +137,10 @@ const viewAmp = () => {
 
 }
 
+const create_db = () => {
+    console.log("create_DB")
+}
+
 
 /*
 const getRecords = (sql) => {
@@ -179,4 +183,4 @@ const create_db = () => {
 */
 
 
-export { createTableMot, createTableAmp, insertDataMot, insertDataAmp, viewMot, viewAmp };
+export { createTableMot, createTableAmp, insertDataMot, insertDataAmp, viewMot, viewAmp, create_db };
