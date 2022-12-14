@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import RNBluetoothClassic, {
   BluetoothDevice
 } from 'react-native-bluetooth-classic';
-import { Button, PermissionsAndroid } from 'react-native';
+import { View, Button, PermissionsAndroid } from 'react-native';
 
 class BoutonConnectDevice extends Component{
     constructor(props){
@@ -80,10 +80,10 @@ class BoutonConnectDevice extends Component{
     render(){
         return(
             <Button 
-                onPress={this.connect}
-                title={this.testIfThereIsADeviceSelected()}
-                color="#f00"
-                />
+            onPress={this.connect}
+            title={this.testIfThereIsADeviceSelected()}
+            color="#f00"
+            />
         )
     }
 }

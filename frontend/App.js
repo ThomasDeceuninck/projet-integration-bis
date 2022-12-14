@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 
 import  * as tds from './tds.js';
 //import  * as tds from '../backend/tds.js';
@@ -36,6 +36,8 @@ class BluetoothOn extends Component {
     this.changeUpperStateConnectedDevice = this.changeUpperStateConnectedDevice.bind(this);
     this.initializeRead = this.initializeRead.bind(this);
     this.afficheSoundData = this.afficheSoundData.bind(this);
+    //this.writeToDevice = this.writeToDevice.bind(this);
+    this.sendData = this.sendData.bind(this);
   }
 
   async changeUpperStateSelectedDevice(value){
@@ -75,8 +77,8 @@ class BluetoothOn extends Component {
       else{
           // Si on arrive pas à se déconnecter avec .disconnect() de la librairie (car le bracelet est éteint, le bluetooth a été désactivé, etc.)
           clearInterval(this.readInterval);
-          this.setState({connected : false});
-          console.log("[Phone]Disconnected ungracefully");
+          this.setState({connectedDevice : null});
+          console.log("[Phone] Disconnected ungracefully");
       }
     } catch{
       console.log(error);
@@ -91,10 +93,11 @@ class BluetoothOn extends Component {
      * Déconnecte un device bluetooth encore connecté.
      */
     try {
-      let disconnected = await this.state.disconnect();
-      console.log("[Phone]Disconnected gracefully");
-      this.setState({connected : !disconnected});
+      await this.state.disconnect();
+      console.log("[Phone] Disconnected gracefully");
+      this.setState({connectedDevice : null});
     } catch(error) {
+      console.log("[Phone] Impossible to disconnect")
       console.log(error);
     }
   } 
@@ -127,12 +130,15 @@ class BluetoothOn extends Component {
               }
           }
 
+          //console.log("écriture vers bracelet");
+          //this.writeToDevice("coucou\n");
+
           if(this.state.soundData.length >= 512){
             // appel de la fonction thomas avec this.state.soundData[:512]
             this.state.actionRequired = tds.amplitude_sup(this.state.soundData);
           }
 
-          //console.log("verif action"); // à enlever
+          
           if(this.state.actionRequired !== null){
             
             this.state.actionRequired = null;
@@ -146,22 +152,68 @@ class BluetoothOn extends Component {
     }
   }
 
+
+  async writeToDevice(text){
+    try{
+      try{
+        text = String(text);
+      } catch(err){
+        console.log(err);
+        throw new Error(`La valeur à envoyer ne peut pas être transformée en string.`);
+      }
+
+
+      
+      await RNBluetoothClassic.writeToDevice(
+        this.state.connectedDevice.address,
+        text,
+        "utf-8"
+      );
+      
+      
+      //let text = Buffer.alloc(10, "a");  
+      
+      //await this.state.connectedDevice.write(text);
+
+
+
+    } catch(err){
+      console.log(err);
+
+    }
+
+  }
+
   afficheSoundData(){
     alert(this.state.soundData.length);
+    console.log(this.state.soundData(length(this.state.soundData)));
+  }
+
+  sendData(){
+    //this.writeToDevice("coucou\n");
+    this.writeToDevice("coucou\n");
   }
 
 
 
   render() {
     return (
-      <BlocBoutons 
-      changeUpperStateSelectedDevice={this.changeUpperStateSelectedDevice} 
-      changeUpperStateConnectedDevice={this.changeUpperStateConnectedDevice} 
-      initializeRead={this.initializeRead}
-      afficheSoundData={this.afficheSoundData}
-      selectedDevice={this.state.selectedDevice} 
-      connectedDevice={this.state.connectedDevice}
-      />
+      <View>
+        <BlocBoutons 
+          changeUpperStateSelectedDevice={this.changeUpperStateSelectedDevice} 
+          changeUpperStateConnectedDevice={this.changeUpperStateConnectedDevice} 
+          initializeRead={this.initializeRead}
+          afficheSoundData={this.afficheSoundData}
+          selectedDevice={this.state.selectedDevice} 
+          connectedDevice={this.state.connectedDevice}
+        />
+        <Button 
+          onPress={this.sendData}
+          title="send data"
+          color="#f00"
+        />
+      </View>
+      
     );
   }
 }
