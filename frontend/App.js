@@ -140,7 +140,7 @@ class BluetoothOn extends Component {
 
           
           if(this.state.actionRequired !== null){
-            
+            this.writeToDevice(this.state.actionRequired);
             this.state.actionRequired = null;
             console.log("action demandée");
             // FONCTION DE GESTION D'ACTION
