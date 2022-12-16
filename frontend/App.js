@@ -132,13 +132,22 @@ class BluetoothOn extends Component {
 
           if(this.state.soundData.length >= 512){
             // appel de la fonction thomas avec this.state.soundData[:512]
-            this.state.actionRequired = tds.amplitude_sup(this.state.soundData);
+            this.setState({actionRequired : tds.amplitude_sup(this.state.soundData)});
+            //this.state.actionRequired = tds.amplitude_sup(this.state.soundData);
+            //console.log(this.state.actionRequired)
+
+            let prevState = this.state;
+            this.setState((prevState) => ({
+              soundData : [...prevState.soundData.slice(256)]
+            }))
           }
 
           
           if(this.state.actionRequired !== null){
             this.writeToDevice(this.state.actionRequired);
-            this.state.actionRequired = null;
+
+            this.setState({actionRequired : null})
+            
             console.log("action demandée");
             // FONCTION DE GESTION D'ACTION
           }

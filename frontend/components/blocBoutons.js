@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { View, Button } from 'react-native';
 import { separateur_de_flux, amplitude_sup } from '../tds';
-import { create_db } from '../DBCreation';
+//import { create_db } from '../DBCreation';
 
 import BoutonScanBluetooth from './BoutonScanBluetooth';
 import BoutonConnectDevice from './BoutonConnectDevice';
@@ -57,11 +57,7 @@ class BlocBoutons extends Component{
                 title="Afficher state"
                 color="#f00"
                 />
-                <Button 
-                onPress={create_db()}
-                title="test tds"
-                color="#f00"
-                />
+                
 
             </View>
         )
