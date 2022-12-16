@@ -45,14 +45,18 @@ const amplitude_sup = (sample) => {
     }, []);*/
     //console.log(amplitude_max[0].valeur);
     let sample_pur = purificateur_signal(sample);
-    for (let i=0; i<sample_pur.length;i++){
-        console.log("ok");
+    let max = sample_pur.reduce(function(a,b) {
+        return Math.max(a, b);
+    });
+    //for (let i=0; i<sample_pur.length;i++){
+        //console.log("ok");
         //if (sample_pur[i]>=600/*amplitude_max[0].valeur*/){
-        if (sample_pur[i]>=310/*amplitude_max[0].valeur*/){
-            requete_max();
-            return 'max';
-        };
+        //if (sample_pur[i]>=310/*amplitude_max[0].valeur*/){
+    if (max >= 310){
+        requete_max();
+        return 'max';
     };
+    //};
     return null; 
 };
 
