@@ -9,8 +9,13 @@ import { viewMot, viewAmp } from './DBCreation';
 const separateur_de_flux = (flux) => {
     //prend le stockage flux, en cree un tableau et appelle amplitude_sup et reconnaissance_de_mot
     //supprime la moitié de départ de stockage flux
-    amplitude_sup(flux);
-    reconnaissance_de_mot(flux);
+    if(amplitude_sup(flux) == 'max'){
+        return 'max';
+    }
+    if(reconnaissance_de_mot(flux) == 'mot'){
+        return 'mot';
+    };
+    return null;
 }
 
 
@@ -48,13 +53,13 @@ const amplitude_sup = (sample) => {
     //let sample_pur = purificateur_signal(sample);
     let sample_pur = sample;
 
-    console.log(sample_pur[0]);
+    //console.log(sample_pur[0]);
     let max_value = Math.max(...sample_pur);
     console.log(max_value);
     max_value = 0;
 
-    if(Math.max(...sample_pur) >= 350){
-        //console.log("max")
+    if(Math.max(...sample_pur) >= 350000){
+        console.log("max")
         return 'max';
     }
     
@@ -79,22 +84,33 @@ const amplitude_sup = (sample) => {
 
 //fonction de traitement de signal rec mot
  const reconnaissance_de_mot = (sample) => {
-    let data = getRecords("SELECT sample_enregistre FROM mot_enregistre;");
-    for(let i=1; i<data.length; i++){
-        let stack = data[i].sample_enregistre;
+    //let data = getRecords("SELECT sample_enregistre FROM mot_enregistre;");
+    let signal = new Float32Array(512);
+    for (var i = 0; i < 512; i++) {
+        signal[i] = Math.sin(470 * Math.PI * 2 * (i / 44100));
+    }
+    let data = [transforme_fourier2(signal, 1)];
+    for(let i=0; i<data.length; i++){// i=1 avec db
+        //let stack = data[i].sample_enregistre;
+        let stack = data[i];
         stack = stack.split(';');
         stack.pop();
         let tab_mot = stack.map(function (val) {
             let stack2 = val.split(',');
             return {frequency: stack2[0], magnitude: stack2[1]};
         });
-        comparaison_fourier(sample, tab_mot);
-        console.log(data[i].sample_enregistre);
-        console.log(stack);
-        console.log(tab_mot[0]);
+        console.log(sample.length);
+        sample_cut = sample.slice(sample.length-512);
+        console.log(sample_cut.length);
+        if(comparaison_fourier(sample_cut, tab_mot) == 'mot'){
+            return 'mot';
+        }
+        //console.log(data[i].sample_enregistre);
+        //console.log(stack);
+        //console.log(tab_mot[0]);
     }
-    console.log(data);
-    return false;
+    //console.log(data);
+    return null;
 }
 
 
@@ -119,12 +135,12 @@ const transforme_fourier2 = (signal,type) => { //fonctionne //rajouter signal en
         var both = frequencies.map(function (f, ix) {
             stack += f+','+magnitudes[ix]+';';
         });
-        console.log(stack);
+        //console.log(stack);
         return stack;
     }
-    console.log(both);
-    console.log(both[0]);
-    console.log(both[0].frequency);
+    //console.log(both);
+    //console.log(both[0]);
+    //console.log(both[0].frequency);
     return both;
     //affichage_fourier(both);
 }
@@ -172,41 +188,6 @@ const requete_mot = () => {
 
 
 
-//fctn de requete db
-const getRecords = (sql) => {
-
-    let recup = [];
-
-
-    //var sq = require('sqlite3'); 
-    var sq = require('react-native-sqlite-storage'); // a l exterieur (nico) pb compilation
-    var database =  new sq.Database('./testdb.db3', (err) => {
-        if (err) {
-          return console.error(err.message);
-        }
-        console.log('Connected to the in-memory SQlite database.');
-    });
-
-    return new Promise(resolve=>{
-        database.all(sql,[],(err,rows)=>{
-            if(err){
-                return console.error(err.message);
-            }
-            rows.forEach((row)=>{
-                recup.push(row);
-                console.log(row.sample_flux);
-            });
-
-            resolve(recup);
-        });
-    });
-}
-
- 
-
-
-
-
 var signal = new Float32Array(512);
 for (var i = 0; i < 512; i++) {
     signal[i] = Math.sin(470 * Math.PI * 2 * (i / 44100));
@@ -241,7 +222,7 @@ let sample = [1,2,3,3,2,1,0,10,0,1,2,3];
 
 
 
-export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot,transforme_fourier2, comparaison_fourier, requete_max, requete_mot, getRecords};
+export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_de_mot,transforme_fourier2, comparaison_fourier, requete_max, requete_mot};
 
 
 
@@ -268,6 +249,41 @@ export  {separateur_de_flux, purificateur_signal, amplitude_sup, reconnaissance_
     records=await getRecords(sql);
     console.log(recup);
 }*/
+
+
+
+/*
+//fctn de requete db
+const getRecords = (sql) => {
+
+    let recup = [];
+
+
+    //var sq = require('sqlite3'); 
+    var sq = require('react-native-sqlite-storage'); // a l exterieur (nico) pb compilation
+    var database =  new sq.Database('./testdb.db3', (err) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        console.log('Connected to the in-memory SQlite database.');
+    });
+
+    return new Promise(resolve=>{
+        database.all(sql,[],(err,rows)=>{
+            if(err){
+                return console.error(err.message);
+            }
+            rows.forEach((row)=>{
+                recup.push(row);
+                console.log(row.sample_flux);
+            });
+
+            resolve(recup);
+        });
+    });
+}
+
+*/
 
 
 

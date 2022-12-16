@@ -132,7 +132,7 @@ class BluetoothOn extends Component {
 
           if(this.state.soundData.length >= 512){
             // appel de la fonction thomas avec this.state.soundData[:512]
-            this.setState({actionRequired : tds.amplitude_sup(this.state.soundData)});
+            this.setState({actionRequired : tds.separateur_de_flux(this.state.soundData)});
             //this.state.actionRequired = tds.amplitude_sup(this.state.soundData);
             //console.log(this.state.actionRequired)
 
