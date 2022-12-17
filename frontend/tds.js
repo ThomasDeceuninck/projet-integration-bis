@@ -58,7 +58,7 @@ const amplitude_sup = (sample) => {
     console.log(max_value);
     max_value = 0;
 
-    if(Math.max(...sample_pur) >= 350000){
+    if(Math.max(...sample_pur) >= 350){
         console.log("max")
         return 'max';
     }
@@ -99,9 +99,9 @@ const amplitude_sup = (sample) => {
             let stack2 = val.split(',');
             return {frequency: stack2[0], magnitude: stack2[1]};
         });
-        console.log(sample.length);
+        console.log('sound = '+sample.length);
         sample_cut = sample.slice(sample.length-512);
-        console.log(sample_cut.length);
+        //console.log(sample_cut.length);
         if(comparaison_fourier(sample_cut, tab_mot) == 'mot'){
             return 'mot';
         }
@@ -119,9 +119,11 @@ const amplitude_sup = (sample) => {
 
 //fctn fourier test 2
 const transforme_fourier2 = (signal,type) => { //fonctionne //rajouter signal en param et retirer signale dedans
+    let max_value = Math.max(...signal);
+    let signal_norm = signal.map(x => x/max_value);
     var ffft = require('fft-js').fft,
     fftUtil = require('fft-js').util;
-    var phasors = ffft(signal);
+    var phasors = ffft(signal_norm);
     var frequencies = fftUtil.fftFreq(phasors, 512), // Sample rate and coef is just used for length, and frequency step
     magnitudes = fftUtil.fftMag(phasors); 
 
@@ -160,8 +162,10 @@ const comparaison_fourier = (sample1, sample2) => {
     let stock = 0;
     for (let i=0; i<tf1.length; i++){
         for (let j=0; j<tf2.length;j++){
-            if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>tf2[j].magnitude*0.5-3.0 && tf1[i].magnitude<tf2[j].magnitude*6.5+5.0){
-                console.log(stock);
+            //if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>tf2[j].magnitude*0.5-3.0 && tf1[i].magnitude<tf2[j].magnitude*6.5+5.0){
+            if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>=tf2[j].magnitude*0.9 && tf1[i].magnitude<=tf2[j].magnitude*1.1){
+
+                //console.log('st = '+stock);
                 stock+=1;
                 break
             } 

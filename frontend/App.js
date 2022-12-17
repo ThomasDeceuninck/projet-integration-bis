@@ -138,7 +138,7 @@ class BluetoothOn extends Component {
 
             let prevState = this.state;
             this.setState((prevState) => ({
-              soundData : [...prevState.soundData.slice(256)]
+              soundData : [...prevState.soundData.slice(258)]
             }))
           }
 
