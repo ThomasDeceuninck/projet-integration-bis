@@ -9,12 +9,13 @@ import { viewMot, viewAmp } from './DBCreation';
 const separateur_de_flux = (flux) => {
     //prend le stockage flux, en cree un tableau et appelle amplitude_sup et reconnaissance_de_mot
     //supprime la moitié de départ de stockage flux
-    if(amplitude_sup(flux) == 'max'){
-        return 'max';
-    }
+    
     if(reconnaissance_de_mot(flux) == 'mot'){
         return 'mot';
     };
+    if(amplitude_sup(flux) == 'max'){
+        return 'max';
+    }
     return null;
 }
 
@@ -58,7 +59,7 @@ const amplitude_sup = (sample) => {
     console.log(max_value);
     max_value = 0;
 
-    if(Math.max(...sample_pur) >= 350){
+    if(Math.max(...sample_pur) >= 400){
         console.log("max")
         return 'max';
     }
@@ -99,7 +100,7 @@ const amplitude_sup = (sample) => {
             let stack2 = val.split(',');
             return {frequency: stack2[0], magnitude: stack2[1]};
         });
-        console.log('sound = '+sample.length);
+        //console.log('sound = '+sample.length);
         sample_cut = sample.slice(sample.length-512);
         //console.log(sample_cut.length);
         if(comparaison_fourier(sample_cut, tab_mot) == 'mot'){
@@ -163,7 +164,7 @@ const comparaison_fourier = (sample1, sample2) => {
     for (let i=0; i<tf1.length; i++){
         for (let j=0; j<tf2.length;j++){
             //if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>tf2[j].magnitude*0.5-3.0 && tf1[i].magnitude<tf2[j].magnitude*6.5+5.0){
-            if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>=tf2[j].magnitude*0.9 && tf1[i].magnitude<=tf2[j].magnitude*1.1){
+            if (tf1[i].frequency==tf2[j].frequency && tf1[i].magnitude>=tf2[j].magnitude*0.8 && tf1[i].magnitude<=tf2[j].magnitude*1.2){
 
                 //console.log('st = '+stock);
                 stock+=1;
@@ -171,7 +172,9 @@ const comparaison_fourier = (sample1, sample2) => {
             } 
         }
     }
-    if (stock == tf1.length){
+    //if (stock == tf1.length){
+    if (stock >= 50){
+
         requete_mot();
         return 'mot';
     }
