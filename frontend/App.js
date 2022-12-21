@@ -120,6 +120,8 @@ class BluetoothOn extends Component {
           for (let i = 0; i < available; i++) {
               let data = await this.state.connectedDevice.read();
               //console.log("[data]"+ data);
+
+              
               
               this.state.soundData.push(data);
               if(i == 128){
@@ -127,10 +129,16 @@ class BluetoothOn extends Component {
               }
           }
 
+          if(Math.max(...this.state.soundData)>=400){
+            this.writeToDevice("max");
+            console.log("max");
+          }
+
           //console.log("écriture vers bracelet");
           //this.writeToDevice("coucou\n");
-
+          //console.log("tour");
           if(this.state.soundData.length >= 512){
+            console.log(">512")
             // appel de la fonction thomas avec this.state.soundData[:512]
             this.setState({actionRequired : tds.separateur_de_flux(this.state.soundData)});
             //this.state.actionRequired = tds.amplitude_sup(this.state.soundData);
@@ -138,7 +146,7 @@ class BluetoothOn extends Component {
 
             let prevState = this.state;
             this.setState((prevState) => ({
-              soundData : [...prevState.soundData.slice(258)]
+              soundData : [...prevState.soundData.slice(258)] 
             }))
           }
 
@@ -148,7 +156,7 @@ class BluetoothOn extends Component {
 
             this.setState({actionRequired : null})
             
-            console.log("action demandée");
+            //console.log("action demandée");
             // FONCTION DE GESTION D'ACTION
           }
         }
@@ -212,11 +220,6 @@ class BluetoothOn extends Component {
           afficheSoundData={this.afficheSoundData}
           selectedDevice={this.state.selectedDevice} 
           connectedDevice={this.state.connectedDevice}
-        />
-        <Button 
-          onPress={this.sendData}
-          title="send data"
-          color="#f00"
         />
       </View>
       

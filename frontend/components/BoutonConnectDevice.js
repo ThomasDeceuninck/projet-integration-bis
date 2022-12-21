@@ -6,6 +6,7 @@ import RNBluetoothClassic, {
 } from 'react-native-bluetooth-classic';
 import { View, Button, PermissionsAndroid } from 'react-native';
 
+
 class BoutonConnectDevice extends Component{
     constructor(props){
         super(props);
@@ -33,7 +34,7 @@ class BoutonConnectDevice extends Component{
     async connect(){
         try{
             if(this.props.selectedDevice === null){
-                throw new Error(`HC-05 Non trouvé. On ne peut pas vérifier qu'il est connecté`);
+                throw new Error(`Bracelet-malentendance Non trouvé. On ne peut pas vérifier qu'il est connecté`);
             }
 
             let connection = await this.props.selectedDevice.isConnected();  // erreur quand on a pas défini le device

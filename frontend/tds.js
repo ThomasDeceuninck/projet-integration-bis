@@ -13,9 +13,11 @@ const separateur_de_flux = (flux) => {
     if(reconnaissance_de_mot(flux) == 'mot'){
         return 'mot';
     };
+    /*
     if(amplitude_sup(flux) == 'max'){
         return 'max';
     }
+    */
     return null;
 }
 
@@ -56,7 +58,7 @@ const amplitude_sup = (sample) => {
 
     //console.log(sample_pur[0]);
     let max_value = Math.max(...sample_pur);
-    console.log(max_value);
+    //console.log(max_value);
     max_value = 0;
 
     if(Math.max(...sample_pur) >= 400){

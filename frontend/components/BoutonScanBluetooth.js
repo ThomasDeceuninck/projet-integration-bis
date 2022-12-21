@@ -36,7 +36,7 @@ class BoutonScanBluetooth extends Component{
     };
 
     isHC05(device){
-        if (device.name == "HC-05"){
+        if (device.name == "Bracelet-malentendance"){ // nom donné au module HC-05
             return true;
         }
     }
@@ -75,8 +75,8 @@ class BoutonScanBluetooth extends Component{
               await this.props.changeUpperStateSelectedDevice(hc05Device);
             }
             else{ // si = Undefined ( si il ne l'a pas trouvé)
-              console.log("HC-05 n'est pas disponible à proximité");
-              alert("HC-05 n'est pas disponible à proximité");
+              console.log("Bracelet-malentendance n'est pas disponible à proximité");
+              alert("Bracelet-malentendance n'est pas disponible à proximité");
             }
         } 
         catch (err) {

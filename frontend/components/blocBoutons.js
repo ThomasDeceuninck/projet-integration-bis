@@ -51,12 +51,6 @@ class BlocBoutons extends Component{
                 changeUpperStateConnectedDevice={this.props.changeUpperStateConnectedDevice}
                 initializeRead={this.props.initializeRead}
                 />
-
-                <Button 
-                onPress={this.props.afficheSoundData}
-                title="Afficher state"
-                color="#f00"
-                />
                 
 
             </View>

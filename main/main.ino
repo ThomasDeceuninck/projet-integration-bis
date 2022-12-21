@@ -41,7 +41,7 @@ void loop() {
   
 
 
-  if(readValue>310){
+  if(readValue>=400){
     //Serial.print("Au dessus\n"); 
     digitalWrite(ledTest, HIGH);  
   }
