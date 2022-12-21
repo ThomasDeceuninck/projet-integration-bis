@@ -2,20 +2,20 @@
   "cli": {
     "version": ">= 2.7.1"
   },
-  "build": {
+    "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal"
     },
-    "preview": {
+      "preview": {
       "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    },
+        "android": {
+          "buildType": "apk"
+        }
+      },
     "production": {}
-  },
+      },
   "submit": {
     "production": {}
-  }
+      }
 }
