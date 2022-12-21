@@ -59,6 +59,23 @@ const createTableAmp = () => {
     Alert.alert('SQLite Database and Table Successfully Created...');
 };
 
+const createTabledB = () => {
+    db.transaction(function (txn) {
+        txn.executeSql(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='settings'",
+            [],
+            function (tx, res) {
+                console.log('item:', res.rows.length);
+                if (res.rows.length == 0) {
+                    txn.executeSql('DROP TABLE IF EXISTS settings', []);
+                    txn.executeSql('CREATE TABLE IF NOT EXISTS settings (name TEXT, valeur INTEGER);', []);
+                }
+            }
+        );
+    })
+    alert('SQLite Database and Table Successfully Created...');
+};
+
 
 
 
@@ -99,6 +116,25 @@ const insertDataAmp = () => {
 
 }
 
+const insertDatadB = () => {
+
+    db.transaction(function (tx) {
+        tx.executeSql(
+            "INSERT INTO settings (name, valeur) VALUES(?,?)", ['seuil', 50],
+            (tx, results) => {
+                console.log('Results', results.rowsAffected);
+                if (results.rowsAffected > 0) {
+                    Alert.alert('Data Inserted Successfully....');
+                } else Alert.alert('Failed....');
+            }
+        );
+    });
+
+    getdB();
+
+}
+
+
 
 
 const viewMot = () => {
@@ -136,6 +172,44 @@ const viewAmp = () => {
     });
 
 }
+
+const getdB = () => {
+
+    db.transaction((tx) => {
+        tx.executeSql(
+            "SELECT valeur FROM settings WHERE name == 'seuil';",
+            [],
+            (tx, results) => {
+                console.log( " RESULTAT:" + results.rows.item(0))
+                var temp ;
+                if (results.rows.length>0){
+                    temp = results.rows.item(0);
+                }
+                return temp.valeur
+            }
+        );
+    });
+
+}
+
+const setdB= (data) =>{
+    db.transaction((tx) => {
+        tx.executeSql(
+            "UPDATE settings SET valeur= (?) WHERE name= 'seuil",
+        [data],(tx, results) => {
+            console.log('Results', results.rowsAffected);
+            if (results.rowsAffected > 0) {
+                alert('Data updated Successfully....');
+            } else alert('Failed....');
+        }
+        )
+    })
+    getdB()
+}
+
+
+
+
 
 const create_db = () => {
     console.log("create_DB")
@@ -183,4 +257,4 @@ const create_db = () => {
 */
 
 
-export { createTableMot, createTableAmp, insertDataMot, insertDataAmp, viewMot, viewAmp, create_db };
+export { createTableMot, createTableAmp, insertDataMot, insertDataAmp, viewMot, viewAmp, create_db, createTabledB, insertDatadB ,getdB, setdB };
