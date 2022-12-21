@@ -120,7 +120,7 @@ export default class SoundSettings extends React.Component{
 
 validerSon(){
   
-  this.play()
+  alert("feature envoie db soon")
   
 }
 
@@ -170,10 +170,20 @@ selectItem(data){
             <TextInput 
               style={styles.input} 
               placeholder= "r"
+            
               
               />
-              <Ionicons size={40} name="mic-outline"/>
-              <Ionicons size={40} name="play-outline" />
+              <TouchableOpacity 
+              onPressIn={this.startRecording}
+              onPressOut={this.stopRecording}>
+
+                   <Ionicons size={50} name="mic-outline"/>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+              onPress={this.play}>
+                   <Ionicons size={50} name="play-outline" />
+              </TouchableOpacity>
             
               {this.state.vibrations.map((item) =>{
                 return ( 
@@ -227,12 +237,7 @@ selectItem(data){
           </Pressable>
 
 
-          <TouchableOpacity
-        onPressIn={this.startRecording}
-        onPressOut={this.stopRecording}
-      >
-        <Text>{this.state.isRecording ? 'Stop Recording' : 'Start Recording'}</Text>
-      </TouchableOpacity>
+
     </View>
       );
   }
