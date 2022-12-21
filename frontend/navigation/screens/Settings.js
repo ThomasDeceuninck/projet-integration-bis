@@ -95,7 +95,7 @@ export default class Settings extends React.Component{
               onSlidingComplete= {this.setdB}
               />
           <Button
-          title="oui"
+          title="test"
           onPress={this.test}/>
           </View>
       );

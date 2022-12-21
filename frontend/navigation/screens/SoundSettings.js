@@ -172,8 +172,8 @@ selectItem(data){
               placeholder= "r"
               
               />
-              <Ionicons size={10} name="mic-outline"/>
-              <Ionicons name="play-outline"/>
+              <Ionicons size={40} name="mic-outline"/>
+              <Ionicons size={40} name="play-outline" />
             
               {this.state.vibrations.map((item) =>{
                 return ( 
