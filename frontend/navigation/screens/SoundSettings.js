@@ -1,8 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
 import * as React from "react"
-import { View,Text, StyleSheet, TextInput, Pressable, TouchableOpacity, Item } from "react-native"
+import { View,Text, StyleSheet, TextInput, Pressable, TouchableOpacity, Item, PermissionsAndroid } from "react-native"
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Audio} from "expo-av"
+import Permissions from "react-native-permissions"
+import Sound from 'react-native-sound'
+import AudioRecord from "react-native-audio-record"
+import {Buffer} from 'buffer'
  
 
 
@@ -12,23 +15,112 @@ import Sounds from "./Sounds";
 
 export default class SoundSettings extends React.Component{
 
-  constructor(props){
-    super(props)
-    this.state={
+
+    sound=null
+    state={
       vibrations: [
       { title: 'Vibration1', key:'1',isChecked: false},
       { title: 'Vibration2', key:'2',isChecked: false},
       { title: 'Vibration3', key:'3',isChecked: false},
       { title: 'Vibration4', key:'4',isChecked: false}
       ],
-      isRecording: false
-      
+      recording:false,
+      audioFile: "",
+      loaded:false,
+      paused:true,
     }
+
+    async componentDidMount(){
+      this.checkPermSound()
+      const options= {
+        sampleRate: 16000,
+        channels:1,
+        bitPerSample:16,
+        wavFile: "test.wav"
+      }
+    
+      AudioRecord.init(options)
+    
+      AudioRecord.on("data", data=>{
+        const chunk= Buffer.from(data, "base64")
+        
+      })
+    }
+  
+    checkPermSound= async ()=>{
+      const GrantedPerm = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      {
+        title:"Veuillez autoriser l'accès au micro",
+        buttonPositive:'Ok',
+        buttonNegative:"Refuser"
+      }
+    )
+  
+    const perm = await Permissions.check('microphone')
+  
+    if (p == "authorized"){
+      return this.requestPermSound
+    }
+  }
+  
+  requestPermSound= async ()=>{
+    const perm = await Permissions.request('microphone')
+  
+  }
+  
+  startRecording= ()=>{
+    this.setState({audioFile: "", recording:true, loaded:false})
+    AudioRecord.start()
+  }
+  
+  stopRecording= async ()=>{
+  
+    if (this.state.recording==false){
+      return
+    }
+    let audioFile=  await AudioRecord.stop()
+    this.setState({audioFile, recording:false})
+  }
+  
+  load = ()=>{
+    return new Promise((resolve, reject) => {
+        if (this.state.audioFile==false){
+          return reject('Pas de fichier audio')
+        }
+      
+  
+      this.sound= new Sound(this.state.audioFile, '', err =>{
+          if (err){
+            console.error(err)
+            return reject(err)
+          }
+          this.setState({loaded:true})
+          return resolve()
+        })
+    })
+  }
+  
+  play = async ()=>{
+    if ( this.state.loaded==false){
+      try {
+        await this.load()
+      }
+      catch (err){
+        console.error(err)
+      }
+    }
+  
+    this.setState({paused:false})
+    Sound.setCategory("Playback")
+    this.sound.play(success=>{
+      this.setState({paused:true})
+    })
+  
   }
 
 validerSon(){
-  alert("Feature soon ")
-  this.props.navigation.navigate('Sounds')
+  
+  this.play()
   
 }
 
@@ -39,35 +131,9 @@ supprimerSon(){
   
 }
 
-startRecording = async () => {
-  try{
-    const permission = await Audio.requestPermissionAsync()
 
-    if (permission.status== "granted"){
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-      const { recording } = await Audio.Recording.createAsync( Audio.RecordingOptionsPresets.HIGH_QUALITY)
-      this.setState({isRecording:true})
 
-    }
-    else{
-      alert("Veuillez donner l'autorisation au micro pour pouvoir enregistrer.")
-    }
-  
-  }
-  catch(err){
-    console.error("Echec de l'enregistrement")
-  }
-  
-  //this.setState({ isRecording: true });
-}
 
-stopRecording = async () => {
-  this.setState({isRecording:false})
-  await recording.stopAndunloadAsync()
-}
 
 
 
