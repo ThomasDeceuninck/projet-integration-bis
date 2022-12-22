@@ -1,33 +1,16 @@
 import * as React from "react"
 import { View,Text, StyleSheet, range, Button } from "react-native"
 import Slider from '@react-native-community/slider'
-
-import * as db from '../../DBCreation'
-
+import { openDatabase } from "react-native-sqlite-storage"
 
 
 
-/*const getdB= ()=>{
-  db.transaction(txn=> 
-    {
-      txn.executeSql('SELECT valeur FROM tabledB WHERE title ==\'new\';',
-      [],
-      (sqlTxn, res)=> {
-        let len = res.rows.length;
-        if (len >0){
-          let valdB= res.rows
-          setValeurdB(valdB)
-          
-          
-        }
 
-      },
-      (txn,error)=>{ console.log('Error on get ' + error) }
-      )
-    }
-  )
-} 
+var db = openDatabase({ name: 'testdb.db3' }, ()=>{ console.log("Connected to db")},()=>{ console.log("db failed")});
 
+
+
+/*
 const setdB= () => {
   db.transaction(txn =>
     txn.executeSql('UPDATE tabledB SET valeur=? WHERE title == \'new\';',
@@ -54,30 +37,97 @@ const addData= ()=> {
 
 }*/
 
+
 export default class Settings extends React.Component{
   constructor(props){
     super(props)
     this.state={
-      range
+      range:this.getdB()
     }
   }
 
+  selectAll(){    //Permet de voir tous les tables existantes dans la DB, juste utile en dev
+    db.transaction(function (txn) {
+        txn.executeSql(
+            "SELECT * FROM sqlite_master WHERE type='table'",
+            [],
+            function (tx, res) {
+                console.log(res.rows.length)
+            var  x = 0
+                for ( let x =0; x < res.rows.length; x++){
+                    console.log(res.rows.item(x))
+                }
+               
+            }
+        );
+    })
+  };
 
-  setRange(data){
+
+
+  getdB(){            //Get de la valeur seuil stockée en DB, elle est stockée dans une range de 200 à 800 et est transformée en une range de 0  à 100 grace à reverseTransformRangeToApp
+
+    db.transaction((tx) => {
+        tx.executeSql(
+            "SELECT valeur FROM settings WHERE name == 'seuil';",
+            [],
+            (tx, results) => {
+                
+                
+                if (results.rows.length>0){
+                    var temp = results.rows.item(0).valeur;
+                    console.log(" VALEUR DANS LA DB:"+ temp)
+                }
+                return this.reverseTransformRangeToApp(+temp)
+            }
+        );
+    });
+  
+  }
+
+  setdB(data){        // Set la valeur du seuil en fonction de ce qui est sur le slider, la valeur entre 0 et 100 est adaptée à une valeur entre 200 et 800
+   db.transaction((tx) => {
+        tx.executeSql(
+            "UPDATE settings SET valeur= ? , name= 'seuil' WHERE name= 'seuil'",
+        [this.transformRangeToDB(data)],(tx, results) => {
+            console.log('SET REUSSI')
+        },
+        (err)=>{console.log('ERREUR SET DB')}
+        )
+    })
+    /*db.transaction((tx) => {
+      tx.executeSql("DELETE FROM SETTINGS WHERE name='seuil'"),[],()=>{
+        console.log('delete done')
+      }
+      })
+
+      db.transaction(function (tx) {
+        tx.executeSql(
+            "INSERT INTO settings (name, valeur) VALUES(?,?)", ['seuil', data],
+            (tx, results) => {
+            }
+        );
+    });*/
+    this.getdB();
+}
+
+
+  setRange(data){           //Modifier la valeur de range(la valeur du slider)
 
     return this.setState({range:data})
   }
 
   test(){
-    db.setdB(10)
-    console.log( "getdb:" + db.getdB())
+  this.selectAll()
   }
 
-  setdB(){
-    db.setdB(range)
-    console.log(typeof range)
+  transformRangeToDB(value) { // Transforme la range de 0 à 100 du slider en une range de 200 à 800 dans la db
+    return (value * 6) + 200;
   }
-  
+
+  reverseTransformRangeToApp(value) { // Trasnforme la range de 200 à 800 de la db en une range de 0 à 100 pour le slider
+    return (value - 200) / 6;
+  }
 
   
   
@@ -90,13 +140,10 @@ export default class Settings extends React.Component{
               style= {{ width:250, height:40}}
               minimumValue={0}
               maximumValue={100}
-              value={db.getdB()} // MODIFIER POUR METTRE A LA VALEUR STOCKEE EN DB
+              value={this.state.range} // MODIFIER POUR METTRE A LA VALEUR STOCKEE EN DB
               onValueChange= {value => this.setRange(Math.floor(value))}
-              onSlidingComplete= {this.setdB}
+              onSlidingComplete= {this.setdB(this.state.range)}
               />
-          <Button
-          title="test"
-          onPress={this.test}/>
           </View>
       );
     }
