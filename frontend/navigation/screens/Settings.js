@@ -6,7 +6,7 @@ import { openDatabase } from "react-native-sqlite-storage"
 
 
 
-var db = openDatabase({ name: 'testdb.db3' }, ()=>{ console.log("db created")},()=>{ console.log("db failed")});
+var db = openDatabase({ name: 'testdb.db3' }, ()=>{ console.log("Connected to db")},()=>{ console.log("db failed")});
 
 
 
@@ -61,7 +61,7 @@ export default class Settings extends React.Component{
             }
         );
     })
-};
+  };
 
 
 
@@ -69,7 +69,7 @@ export default class Settings extends React.Component{
 
     db.transaction((tx) => {
         tx.executeSql(
-            "SELECT valeur FROM settings WHERE name == 'seuil';",
+            "SELECT valeur FROM settings WHERE name = 'seuil';",
             [],
             (tx, results) => {
                 
@@ -78,7 +78,7 @@ export default class Settings extends React.Component{
                     var temp = results.rows.item(0).valeur;
                     console.log(" VALEUR DANS LA DB:"+ temp)
                 }
-                return +temp
+                return this.reverseTransformRangeToApp(+temp)
             }
         );
     });
@@ -89,7 +89,7 @@ export default class Settings extends React.Component{
    db.transaction((tx) => {
         tx.executeSql(
             "UPDATE settings SET valeur= ? , name= 'seuil' WHERE name= 'seuil'",
-        [data],(tx, results) => {
+        [this.transformRangeToDB(data)],(tx, results) => {
             console.log('SET REUSSI')
         },
         (err)=>{console.log('ERREUR SET DB')}
@@ -119,6 +119,14 @@ export default class Settings extends React.Component{
 
   test(){
   this.selectAll()
+  }
+
+  transformRangeToDB(value) {
+    return (value * 6) + 200;
+  }
+
+  reverseTransformRangeToApp(value) {
+    return (value - 200) / 6;
   }
 
   

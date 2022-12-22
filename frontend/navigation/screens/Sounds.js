@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as React from "react"
 import { View,Text, Button , ScrollView, StyleSheet, TouchableOpacity} from "react-native"
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import * as db from '../../DBCreation'
 
 import SoundSettings from "./SoundSettings";
 
@@ -10,15 +11,15 @@ export default class Sounds extends React.Component{
   constructor(props){
     super(props)
     this.state={
-      sounds: [{ title: 'Test1', key:'1',isChecked: true},
-      { title: 'Test2', key:'2', isChecked: true},
-      { title: 'Test3', key:'3', isChecked: true},
-      { title: 'Test4', key:'4', isChecked: true},
-      { title: 'Test5', key:'5', isChecked: true},
-      { title: 'Test6', key:'6', isChecked: true},
-      { title: 'Test7', key:'7', isChecked: true},
-      { title: 'Test8', key:'8', isChecked: true},
-      { title: 'Test9', key:'9', isChecked: true}]
+      sounds: [{ title: 'Test1', key:1,isChecked: true},
+      { title: 'Test2', key:2, isChecked: true},
+      { title: 'Test3', key:3, isChecked: true},
+      { title: 'Test4', key:4, isChecked: true},
+      { title: 'Test5', key:5, isChecked: true},
+      { title: 'Test6', key:6, isChecked: true},
+      { title: 'Test7', key:7, isChecked: true},
+      { title: 'Test8', key:8, isChecked: true},
+      { title: 'Test9', key:9, isChecked: true}]
       
     }
   }
@@ -40,11 +41,13 @@ export default class Sounds extends React.Component{
 <Text onPress={()=>this.props.navigation.navigate('SoundSettings')} >{item.title}</Text> ---------------
  */
 
-    addSound() {
-      this.props.navigation.navigate('SoundSettings', { test:1})
+    addSound() {    //Envoie vers la page de détails pour enregistrer un son
+      this.props.navigation.navigate('SoundSettings')
+      //db.createTableSpecialWords()
     }
 
-    selectItem(data){
+
+    selectItem(data){             // Permet de choisir si l'on veut être averti ou pas d'un son spécial qu'on a enregistré
       /*for ( let x of this.state.sounds){
         if ( data == x.key){
           x.isChecked= !x.isChecked

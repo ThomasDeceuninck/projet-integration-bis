@@ -6,11 +6,15 @@ import Permissions from "react-native-permissions"
 import Sound from 'react-native-sound'
 import AudioRecord from "react-native-audio-record"
 import {Buffer} from 'buffer'
+import { openDatabase } from "react-native-sqlite-storage";
+
  
 
 
 
 import Sounds from "./Sounds";
+
+var db = openDatabase({ name: 'testdb.db3' }, ()=>{ console.log("Connected to db")},()=>{ console.log("db failed")}); //Connecxion à la db
 
 
 export default class SoundSettings extends React.Component{
@@ -19,15 +23,17 @@ export default class SoundSettings extends React.Component{
     sound=null
     state={
       vibrations: [
-      { title: 'Vibration1', key:'1',isChecked: false},
-      { title: 'Vibration2', key:'2',isChecked: false},
-      { title: 'Vibration3', key:'3',isChecked: false},
-      { title: 'Vibration4', key:'4',isChecked: false}
+      { title: 'Vibration1', key:1,isChecked: false},
+      { title: 'Vibration2', key:2,isChecked: false},
+      { title: 'Vibration3', key:3,isChecked: false},
+      { title: 'Vibration4', key:4,isChecked: false}
       ],
       recording:false,
       audioFile: "",
       loaded:false,
       paused:true,
+      text:"Description",
+      vibrationSelected:null
     }
 
     async componentDidMount(){
@@ -36,10 +42,10 @@ export default class SoundSettings extends React.Component{
         sampleRate: 16000,
         channels:1,
         bitPerSample:16,
-        wavFile: "test.wav"
+        wavFile: this.state.text + ".wav"
       }
     
-      AudioRecord.init(options)
+      AudioRecord.init(options) //Initialisation de l'audio
     
       AudioRecord.on("data", data=>{
         const chunk= Buffer.from(data, "base64")
@@ -47,7 +53,7 @@ export default class SoundSettings extends React.Component{
       })
     }
   
-    checkPermSound= async ()=>{
+    checkPermSound= async ()=>{     //Demande à l'utilisateur d'autoriser l'application à utiliser le micro
       const GrantedPerm = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       {
         title:"Veuillez autoriser l'accès au micro",
@@ -58,7 +64,7 @@ export default class SoundSettings extends React.Component{
   
     const perm = await Permissions.check('microphone')
   
-    if (p == "authorized"){
+    if (p == "authorized"){ 
       return this.requestPermSound
     }
   }
@@ -68,21 +74,22 @@ export default class SoundSettings extends React.Component{
   
   }
   
-  startRecording= ()=>{
+  startRecording= ()=>{     //Lance le début de l'enregistrement
     this.setState({audioFile: "", recording:true, loaded:false})
     AudioRecord.start()
   }
   
-  stopRecording= async ()=>{
+  stopRecording= async ()=>{    //Arrête l'enregistrement et enregistre l'audio dans la variable audioFile
   
     if (this.state.recording==false){
       return
     }
     let audioFile=  await AudioRecord.stop()
     this.setState({audioFile, recording:false})
+    let audioData= audioFile
   }
   
-  load = ()=>{
+  load = ()=>{           
     return new Promise((resolve, reject) => {
         if (this.state.audioFile==false){
           return reject('Pas de fichier audio')
@@ -100,7 +107,7 @@ export default class SoundSettings extends React.Component{
     })
   }
   
-  play = async ()=>{
+  play = async ()=>{        // Joue l'enregistrement audio
     if ( this.state.loaded==false){
       try {
         await this.load()
@@ -118,27 +125,8 @@ export default class SoundSettings extends React.Component{
   
   }
 
-validerSon(){
-  
-  alert("feature envoie db soon")
-  
-}
 
-supprimerSon(){
-  alert("Feature soon ")
-  this.props.navigation.navigate('Sounds')
-
-  
-}
-
-
-
-
-
-
-
-
-selectItem(data){
+selectItem(data){         //Permet de choisir la vibration, en appuyant sur une des vibrations, son paramètre isCheckec passe à true et met celui de tous les autres à False
   /*for ( let x of this.state.sounds){
     if ( data == x.key){
       x.isChecked= !x.isChecked
@@ -158,19 +146,87 @@ selectItem(data){
     return {...item}
     })
     this.setState({vibrations: arr})
+    this.setVibrations()
 }
+
+setText(data){
+ return this.setState({text:data})
+}
+
+setVibrations(){      //Regarde parmi toutes les vibrations laquelle à son paramètre isChecked à true et l'envoie dans la variable vibrationSelected qui sera ensuite envoyée en db
+  for ( let x = 0; x<this.state.vibrations.length;x++){
+     if ( this.state.vibrations[x].isChecked==true){
+      console.log(this.state.vibrations[x].isChecked)
+      return this.setState({vibrationSelected:this.state.vibrations[x].key})
+     }
+  }
+}
+
+
+validerSon(){           // Envoie la description, le booleen isChecked, l'audio et la vibration en base de données ---- La requête ne fonctionne pas je ne comprends pas pq ----
+  //this.selectAll()
+      db.transaction(function (txn) {
+          txn.executeSql(
+            "INSERT INTO specialwords (description, isChecked, audio, vibration) VALUES ( ? , ? , ? , ? )", [this.state.text, true, this.state.audioFile, this.state.vibrationSelected],
+              (txn, results) => {
+                console.log("Données envoyées")
+                console.log('Results', results.rowsAffected);
+              },
+              ()=>{console.error("DONNEES NON ENVOYEES")}
+          );
+      });
+      
+      console.log(this.state.text)
+      console.log(this.state.audioFile)
+      console.log(this.state.vibrationSelected)
+}
+
+supprimerSon(data){ //Supprime la ligne du mot enregistré
+  db.transaction(function (txn) {
+    txn.executeSql("DELETE FROM specialwords WHERE desc = ?", [data], ()=>{ console.log('row dropped')}, ()=>{ console.log("Row didn't drop")})
+  })
+
+}
+
+createTableSpecialWords(){ // supprime la table specialwords si elle existe déja et en recrée une nouvelle
+  db.transaction(function (txn) {
+    txn.executeSql('DROP TABLE IF EXISTS specialwords', [], ()=>{console.log("DROPPED")}, ()=>{console.error("not dropped")});
+    txn.executeSql("CREATE TABLE IF NOT EXISTS specialwords (id INTEGER PRIMARY KEY AUTOINCREMENT,description TEXT,isChecked BOOLEAN,audio BLOB, vibration INT)", [], ()=>{console.log("table special words created succesffully")}, ()=>{console.error(error.message)});
+  })
+
+};
+
+selectAll(){ //Affiche toutes les tables présentes en console, utile juste en dev
+ db.transaction(function (txn) {
+      txn.executeSql(
+          "SELECT * FROM sqlite_master WHERE type='table'",
+          [],
+          function (tx, res) {
+              console.log(res.rows.length)
+          var  x = 0
+              for ( let x =0; x < res.rows.length; x++){
+                  console.log(res.rows.item(x))
+              }
+             
+          }
+      );
+  })
+
+};
 
 
 
 
   render(){
+    const param= this.props.route.params
     const { navigation } = this.props
     return (
         <View style= {{ alignItems:'center'}}>
             <TextInput 
               style={styles.input} 
-              placeholder= "r"
-            
+              placeholder="Type here to translate!"
+              onChangeText={newText => this.setText(newText)}
+                  
               
               />
               <TouchableOpacity 

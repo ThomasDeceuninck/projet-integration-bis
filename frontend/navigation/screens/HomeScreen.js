@@ -204,7 +204,12 @@ class HomeScreen extends Component {
 
   render() {
     return (
-      <View>
+      <View style={{
+      height: 55,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginTop: 20,
+      paddingHorizontal:10,}}>
         <BlocBoutons 
           changeUpperStateSelectedDevice={this.changeUpperStateSelectedDevice} 
           changeUpperStateConnectedDevice={this.changeUpperStateConnectedDevice} 

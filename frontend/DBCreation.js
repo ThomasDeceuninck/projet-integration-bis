@@ -24,7 +24,7 @@ function insert_table(){
 
 var db = openDatabase({ name: 'testdb.db3' }, ()=>{ console.log("db created")},()=>{ console.log("db failed")});
 
-const selectAll = () => {
+const selectAll = () => { //Affiche toutes les tables présentes en console, utile juste en dev
     db.transaction(function (txn) {
         txn.executeSql(
             "SELECT * FROM sqlite_master WHERE type='table'",
@@ -78,7 +78,7 @@ const createTableAmp = () => {
     Alert.alert('SQLite Database and Table Successfully Created...');
 };
 
-const createTabledB = () => {
+const createTabledB = () => {       //Crée la table gérant le seuil minimum pour être notifié du bruit. Une seule ligne présente, celle-ci contient le nom "seuil" et la valeur de celui-ci
     db.transaction(function (txn) {
         txn.executeSql(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='settings'",
@@ -135,7 +135,7 @@ const insertDataAmp = () => {
 
 }
 
-const insertDatadB = () => {
+const insertDatadB = () => { // Permet d'inéserer un seuil initial à la table
 
     db.transaction(function (tx) {
         tx.executeSql(
@@ -192,7 +192,7 @@ const viewAmp = () => {
 
 }
 
-const getdB = () => {
+const getdB = () => { //Get de la valeur de seuil
 
     db.transaction((tx) => {
         tx.executeSql(
@@ -211,7 +211,7 @@ const getdB = () => {
 
 }
 
-const setdB= (data) =>{
+const setdB= (data) =>{ //Set de la valeur de seuil
     db.transaction((tx) => {
         tx.executeSql(
             "UPDATE settings SET valeur=? WHERE name= 'seuil",
@@ -230,9 +230,18 @@ const setdB= (data) =>{
 
 
 
-const create_db = () => {
-    console.log("create_DB")
+const createTableSpecialWords = ()=>{ //supprime la table specialwords si elle existe déja et en recrée une nouvelle
+    db.transaction(function (txn) {
+      txn.executeSql('DROP TABLE IF EXISTS specialwords', [], ()=>{console.log("DROPPED")}, ()=>{console.error("not dropped")});
+      txn.executeSql("CREATE TABLE IF NOT EXISTS specialwords (id INTEGER PRIMARY KEY AUTOINCREMENT,description TEXT,isChecked BOOLEAN,audio BLOB, vibration INT)", [], ()=>{console.log("table special words created succesffully")}, ()=>{console.error(error.message)});
+    })
+  
+  };
+
+const getTableSpecialWords =() =>{
+
 }
+
 
 
 /*
@@ -276,4 +285,4 @@ const create_db = () => {
 */
 
 
-export { createTableMot, createTableAmp, insertDataMot, insertDataAmp, viewMot, viewAmp, create_db, createTabledB, insertDatadB ,getdB, setdB, selectAll };
+export { createTableMot, createTableAmp, insertDataMot, insertDataAmp, viewMot, viewAmp, createTableSpecialWords, createTabledB, insertDatadB ,getdB, setdB, selectAll };
