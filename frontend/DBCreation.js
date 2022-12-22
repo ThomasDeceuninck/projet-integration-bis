@@ -22,7 +22,26 @@ function insert_table(){
 }*/
 
 
-var db = openDatabase({ name: 'testdb.db3' });
+var db = openDatabase({ name: 'testdb.db3' }, ()=>{ console.log("db created")},()=>{ console.log("db failed")});
+
+const selectAll = () => {
+    db.transaction(function (txn) {
+        txn.executeSql(
+            "SELECT * FROM sqlite_master WHERE type='table'",
+            [],
+            function (tx, res) {
+                console.log(res.rows.length)
+            var  x = 0
+                for ( let x =0; x < res.rows.length; x++){
+                    console.log(res.rows.item(x))
+                }
+               
+            }
+        );
+    })
+};
+
+
 const createTableMot = () => {
     db.transaction(function (txn) {
         txn.executeSql(
@@ -180,12 +199,12 @@ const getdB = () => {
             "SELECT valeur FROM settings WHERE name == 'seuil';",
             [],
             (tx, results) => {
-                console.log( " RESULTAT:" + results.rows.item(0))
+                console.log( " RESULTAT:" + results.rows.item(0).valeur)
                 var temp ;
                 if (results.rows.length>0){
-                    temp = results.rows.item(0);
+                    temp = results.rows.item(0).valeur;
                 }
-                return temp.valeur
+                return Number(temp)
             }
         );
     });
@@ -195,7 +214,7 @@ const getdB = () => {
 const setdB= (data) =>{
     db.transaction((tx) => {
         tx.executeSql(
-            "UPDATE settings SET valeur= (?) WHERE name= 'seuil",
+            "UPDATE settings SET valeur=? WHERE name= 'seuil",
         [data],(tx, results) => {
             console.log('Results', results.rowsAffected);
             if (results.rowsAffected > 0) {
@@ -204,7 +223,7 @@ const setdB= (data) =>{
         }
         )
     })
-    getdB()
+    console.log( " valeur db set à " + getdB())
 }
 
 
@@ -257,4 +276,4 @@ const create_db = () => {
 */
 
 
-export { createTableMot, createTableAmp, insertDataMot, insertDataAmp, viewMot, viewAmp, create_db, createTabledB, insertDatadB ,getdB, setdB };
+export { createTableMot, createTableAmp, insertDataMot, insertDataAmp, viewMot, viewAmp, create_db, createTabledB, insertDatadB ,getdB, setdB, selectAll };
